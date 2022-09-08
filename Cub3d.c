@@ -85,7 +85,7 @@ float distance(t_player *p, float Wallx, float Wally)
 {
 	return (sqrt((Wallx - p->x) * (Wallx - p->x) + (Wally - p->y) * (Wally - p->y)));
 }
-float cast_ray_horz(t_player *player, float angle)
+void cast_ray_horz(t_player *player, float angle, float *distance_check, t_ray *ray)
 {
 	angle = remainder(angle, 2 * M_PI);
 	if(angle < 0)
@@ -129,11 +129,13 @@ float cast_ray_horz(t_player *player, float angle)
 			WallHorzy += y_step;
 		}
 	}
-	draw_line(player->i.mlx,player->i.win,player->x, player->y, Wallhitx, Wallhity, 16711680);
-	return (distance(player, Wallhitx, Wallhity));
+	*distance_check = distance(player, Wallhitx, Wallhity);
+	draw_line(player->i.mlx, player->i.win, player->x, player->y, Wallhitx, Wallhity, 16711680);
+	// ray->Wallhitx = Wallhitx;
+	// ray->Wallhity = Wallhity;
 }
 
-float cast_ray_vert(t_player *player, float angle)
+void cast_ray_vert(t_player *player, float angle, float *distance_check, t_ray *ray)
 {
 	angle = remainder(angle, 2 * M_PI);
 	if(angle < 0)
@@ -174,16 +176,33 @@ float cast_ray_vert(t_player *player, float angle)
 			Wallverty += y_step;
 		}
 	}
-	return (distance(player, Wallhitx, Wallhity));
+	float new_distance = distance(player, Wallhitx, Wallhity);
+	if(new_distance > *distance_check)
+	{
+		*distance_check = new_distance;
+		ray->Wallhitx = Wallhitx;
+		ray->Wallhity = Wallhity;
+	}
+}
+
+void cast_ray(t_player *player, float angle, t_ray ray)
+{
+	float distance_check;
+
+	distance_check = 0;
+	cast_ray_horz(player, angle, &distance_check, &ray);
+	// cast_ray_vert(player, angle, &distance_check, &ray);
+	// draw_line(player->i.mlx, player->i.win, player->x, player->y, ray.Wallhitx, ray.Wallhity, 16711680);
 }
 void render_rays(t_player *player)
 {
 	float angle = player->rotationAngle - (FOV / 2);
+	t_ray rays[500];
+
 	int rayid = 0;
 	while (rayid < 500)
 	{
-		float horz = cast_ray_horz(player, angle);
-		float vert = cast_ray_vert(player, angle);
+		cast_ray(player, angle, rays[rayid]);
 		angle += (FOV / 500);
 		rayid++;
 	}
