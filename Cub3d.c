@@ -3,12 +3,12 @@
 char arr[8][15] = 
 {
 	{'1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'},
-	{'1','0','0','0','0','0','0','0','0','0','1','1','0','0','1'},
-	{'1','0','1','1','0','0','0','0','0','1','1','1','1','0','1'},
-	{'1','1','0','0','0','0','0','0','0','0','1','1','0','1','1'},
-	{'1','0','0','0','0','1','0','0','0','0','1','1','1','1','1'},
-	{'1','0','0','0','0','0','0','0','0','0','1','1','0','0','1'},
-	{'1','0','1','1','0','0','0','0','0','1','1','1','1','0','1'},
+	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
+	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
+	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
+	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
+	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
+	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
 	{'1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'}
 } ;
 
@@ -37,6 +37,7 @@ void draw_line(void *mlx, void *win, float beginX, float beginY, float endX, flo
 	    --pixels;
 	}
 }
+
 void render_map(t_player p)
 {
 	int y = 0;
@@ -87,103 +88,13 @@ float distance(t_player *p, float Wallx, float Wally)
 {
 	return (sqrt((Wallx - p->x) * (Wallx - p->x) + (Wally - p->y) * (Wally - p->y)));
 }
-void cast_ray_horz(t_player *player, float angle, float *distance_check, t_ray *ray)
-{
-	angle = remainder(angle, 2 * M_PI);
-	if(angle < 0)
-		angle += 2 * M_PI;
-	int isRayDown = (angle > 0 && angle < M_PI);
-	int isRayUp = !isRayDown;
-	int isRayright = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
-	int isRayleft = !isRayright;
-	float y_intercept = floor(player->y / TILE_SIZE) * TILE_SIZE;
-	if(isRayDown)
-		y_intercept += TILE_SIZE;
-	float x_intercept = player->x + (y_intercept - player->y) / tan(angle);
-	float y_step = TILE_SIZE;
-	if(isRayUp)
-		y_step *= -1;
-	float x_step = y_step / tan(angle);
-	if((isRayleft && x_step > 0) || (isRayright && x_step < 0))
-		x_step *= -1;
-	float WallHorzx = x_intercept;
-	float WallHorzy = y_intercept;
-	float Wallhitx = 0;
-	float Wallhity = 0;
-	while (WallHorzx >= 0 && WallHorzx <= 15 * 50 && WallHorzy >= 0 && WallHorzy <= 8 * 50)
-	{
-		float tocheckx = WallHorzx;
-		float tochecky = WallHorzy;
-		if(isRayUp)
-			tochecky = WallHorzy + 1;
-		if(isWall(tocheckx, tochecky))
-		{
-			Wallhitx = WallHorzx;
-			if(WallHorzy <= 1)
-				Wallhity = WallHorzy + 50;
-			else
-				Wallhity = WallHorzy;
-			break;
-		}
-		else
-		{
-			WallHorzx += x_step;
-			WallHorzy += y_step;
-		}
-	}
-	*distance_check = distance(player, Wallhitx, Wallhity);
-	ray->Wallhitx = Wallhitx;
-	ray->Wallhity = Wallhity;
-}
-
-void cast_ray_vert(t_player *player, float angle, float *distance_check, t_ray *ray)
-{
-	angle = remainder(angle, 2 * M_PI);
-	if(angle < 0)
-		angle += 2 * M_PI;
-	int isRayDown = (angle > 0 && angle < M_PI);
-	int isRayUp = !isRayDown;
-	int isRayright = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
-	int isRayleft = !isRayright;
-	float x_intercept = floor(player->x / TILE_SIZE) * TILE_SIZE;
-	if(isRayright)
-		x_intercept += TILE_SIZE;
-	float y_intercept = player->y + ((x_intercept - player->x) * tan(angle));
-	float x_step = TILE_SIZE;
-	if(isRayleft)
-		x_step *= -1;
-	float y_step = x_step * tan(angle);
-	if((isRayUp && y_step > 0) || (isRayDown && y_step < 0))
-		y_step *= -1;
-	float WallHorzx = x_intercept;
-	float WallHorzy = y_intercept;
-	float Wallhitx = 0;
-	float Wallhity = 0;
-	while (WallHorzx >= 0 && WallHorzx <= 15 * TILE_SIZE && WallHorzy >= 0 && WallHorzy <= 8 * TILE_SIZE)
-	{
-		float tocheckx = WallHorzx;
-		float tochecky = WallHorzy;
-		if(isRayleft)
-			tocheckx = WallHorzx - 1;
-		if(isWall(tocheckx, tochecky))
-		{
-			Wallhitx = WallHorzx;
-			Wallhity = WallHorzy;
-			break;
-		}
-		else
-		{
-			WallHorzx += x_step;
-			WallHorzy += y_step;
-		}
-	}
-	draw_line(player->i.mlx, player->i.win, player->x, player->y, Wallhitx, Wallhity, 16711680);
-}
 
 void cast_ray(t_player *player, float angle, t_ray ray)
 {
 	float distance_check1;
 	float distance_check2;
+	int found_horz = FALSE;
+	int found_vert = FALSE;
 
 	angle = remainder(angle, 2 * M_PI);
 	if(angle < 0)
@@ -192,7 +103,7 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 	int isRayUp = !isRayDown;
 	int isRayright = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
 	int isRayleft = !isRayright;
-	// HORIZONTAL
+	// // HORIZONTAL
 	float horz_y_intercept = floor(player->y / TILE_SIZE) * TILE_SIZE;
 	if(isRayDown)
 		horz_y_intercept += TILE_SIZE;
@@ -200,7 +111,7 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 	float horz_y_step = TILE_SIZE;
 	if(isRayUp)
 		horz_y_step *= -1;
-	float horz_x_step = horz_y_step / tan(angle);
+	float horz_x_step = TILE_SIZE / tan(angle);
 	if((isRayleft && horz_x_step > 0) || (isRayright && horz_x_step < 0))
 		horz_x_step *= -1;
 	float WallHorzx = horz_x_intercept;
@@ -212,14 +123,12 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 		float horz_tocheckx = WallHorzx;
 		float horz_tochecky = WallHorzy;
 		if(isRayUp)
-			horz_tochecky = WallHorzy + 1;
+			horz_tochecky -= 1;
 		if(isWall(horz_tocheckx, horz_tochecky))
 		{
 			horz_Wallhitx = WallHorzx;
-			if(WallHorzy <= 1)
-				horz_Wallhity = WallHorzy + 50;
-			else
-				horz_Wallhity = WallHorzy;
+			horz_Wallhity = WallHorzy;
+			found_horz = TRUE;
 			break;
 		}
 		else
@@ -228,7 +137,10 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 			WallHorzy += horz_y_step;
 		}
 	}
-	distance_check1 = distance(player, horz_Wallhitx, horz_Wallhity);
+	if(found_horz)
+		distance_check1 = distance(player, horz_Wallhitx, horz_Wallhity);
+	else
+		distance_check1 = MAX_INT;
 	// VERTICAL
 	float vert_x_intercept = floor(player->x / TILE_SIZE) * TILE_SIZE;
 	if(isRayright)
@@ -237,7 +149,7 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 	float vert_x_step = TILE_SIZE;
 	if(isRayleft)
 		vert_x_step *= -1;
-	float vert_y_step = vert_x_step * tan(angle);
+	float vert_y_step = TILE_SIZE * tan(angle);
 	if((isRayUp && vert_y_step > 0) || (isRayDown && vert_y_step < 0))
 		vert_y_step *= -1;
 	float vert_WallHorzx = vert_x_intercept;
@@ -249,10 +161,14 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 		float vert_tocheckx = vert_WallHorzx;
 		float vert_tochecky = vert_WallHorzy;
 		if(isRayleft)
-			vert_tocheckx = vert_WallHorzx - 1;
+			vert_tocheckx -= 1;
 		if(isWall(vert_tocheckx, vert_tochecky))
 		{
-			vert_Wallhitx = vert_WallHorzx;
+			found_vert = TRUE;
+			if(vert_WallHorzx <= 1)
+				vert_Wallhitx = vert_WallHorzx - 50;
+			else
+				vert_Wallhitx = vert_WallHorzx;
 			vert_Wallhity = vert_WallHorzy;
 			break;
 		}
@@ -262,9 +178,12 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 			vert_WallHorzy += vert_y_step;
 		}
 	}
-	distance_check2 = distance(player, vert_Wallhitx, vert_Wallhity);
-	printf("%f and %f\n", distance_check1, distance_check2);
-	if(distance_check1 > distance_check2)
+	if(found_vert)
+		distance_check2 = distance(player, vert_Wallhitx, vert_Wallhity);
+	else
+		distance_check2 = MAX_INT;
+	printf("distance1 %f and distance2 %f\n", distance_check1, distance_check2);
+	if(distance_check1 < distance_check2)
 		draw_line(player->i.mlx, player->i.win, player->x, player->y, horz_Wallhitx, horz_Wallhity, 16711680);
 	else
 		draw_line(player->i.mlx, player->i.win, player->x, player->y, vert_Wallhitx, vert_Wallhity, 16711680);
@@ -275,10 +194,10 @@ void render_rays(t_player *player)
 	t_ray rays[500];
 
 	int rayid = 0;
-	while (rayid < 500)
+	while (rayid < 120)
 	{
 		cast_ray(player, angle, rays[rayid]);
-		angle += (FOV / 500);
+		angle += (FOV / (120));
 		rayid++;
 	}
 }
@@ -311,7 +230,7 @@ int main()
 	player.width = 5;
 	player.turnDirection = 0;
 	player.walkDirection = 0;
-	player.rotationAngle = M_PI;
+	player.rotationAngle = (M_PI) / 2;
 	player.walkSpeed = 0.15 * TILE_SIZE;
 	player.turnSpeed = 10 * (M_PI / 180);
 	data.mlx = mlx_init();
