@@ -182,11 +182,10 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 		distance_check2 = distance(player, vert_Wallhitx, vert_Wallhity);
 	else
 		distance_check2 = MAX_INT;
-	printf("distance1 %f and distance2 %f\n", distance_check1, distance_check2);
 	if(distance_check1 < distance_check2)
-		draw_line(player->i.mlx, player->i.win, player->x, player->y, horz_Wallhitx, horz_Wallhity, 16711680);
+		draw_line(player->i.mlx, player->i.win, player->x, player->y, horz_Wallhitx, horz_Wallhity, 15000680);
 	else
-		draw_line(player->i.mlx, player->i.win, player->x, player->y, vert_Wallhitx, vert_Wallhity, 16711680);
+		draw_line(player->i.mlx, player->i.win, player->x, player->y, vert_Wallhitx, vert_Wallhity, 15000680);
 }
 void render_rays(t_player *player)
 {
