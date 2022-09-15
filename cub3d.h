@@ -7,7 +7,8 @@
 #define TRUE 1
 #define TILE_SIZE 50
 #define MAX_INT  2147483647
-#define FOV      (30 * (M_PI / 180))
+#define FOV      (60 * (M_PI / 180))
+#define MINIMAP_FACTOR 0.3
 
 typedef struct s_img
 {

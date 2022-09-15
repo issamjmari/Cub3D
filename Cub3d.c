@@ -5,10 +5,10 @@ char arr[8][15] =
 	{'1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'},
 	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
 	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
-	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
-	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
-	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
-	{'1','0','0','0','0','0','0','0','0','0','0','0','0','0','1'},
+	{'1','0','0','0','1','0','0','0','0','0','0','1','0','0','1'},
+	{'1','0','1','0','0','0','0','0','0','0','0','0','0','0','1'},
+	{'1','0','0','0','0','0','0','1','1','0','0','0','0','0','1'},
+	{'1','0','1','0','1','0','0','0','0','0','0','1','0','0','1'},
 	{'1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'}
 } ;
 
@@ -18,7 +18,7 @@ void	ft_draw_elem(int x, int y, void *path, t_img i)
 	int	width;
 
 	i.img = mlx_xpm_file_to_image(i.mlx, path, &width, &height);
-	mlx_put_image_to_window (i.mlx, i.win, i.img, x * 50, y * 50);
+	mlx_put_image_to_window (i.mlx, i.win, i.img, (x * 50) * MINIMAP_FACTOR, (y * 50) * MINIMAP_FACTOR);
 }
 void draw_line(void *mlx, void *win, float beginX, float beginY, float endX, float endY, int color)
 {
@@ -31,7 +31,7 @@ void draw_line(void *mlx, void *win, float beginX, float beginY, float endX, flo
 	double pixelY = beginY;
 	while (pixels)
 	{
-	    mlx_pixel_put(mlx, win, pixelX, pixelY, color);
+	    mlx_pixel_put(mlx, win, pixelX * MINIMAP_FACTOR, pixelY * MINIMAP_FACTOR, color);
 	    pixelX += deltaX;
 	    pixelY += deltaY;
 	    --pixels;
@@ -62,8 +62,8 @@ void render_player(t_player p)
 	float start_y = p.y;
 	float end_x = cos(p.rotationAngle) * 90;
 	float end_y = sin(p.rotationAngle) * 90;
-	draw_line(p.i.mlx, p.i.win, start_x, start_y, \
-	start_x + end_x, start_y + end_y,
+	draw_line(p.i.mlx, p.i.win, (start_x), start_y, \
+	(start_x + end_x), (start_y + end_y),
 	16711680);
 }
 int isWall(float a, float b)
@@ -183,9 +183,11 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 	else
 		distance_check2 = MAX_INT;
 	if(distance_check1 < distance_check2)
-		draw_line(player->i.mlx, player->i.win, player->x, player->y, horz_Wallhitx, horz_Wallhity, 15000680);
+		draw_line(player->i.mlx, player->i.win, (player->x), (player->y), (horz_Wallhitx),\
+horz_Wallhity, 15000680);
 	else
-		draw_line(player->i.mlx, player->i.win, player->x, player->y, vert_Wallhitx, vert_Wallhity, 15000680);
+		draw_line(player->i.mlx, player->i.win, (player->x), (player->y), (vert_Wallhitx),\
+vert_Wallhity, 15000680);
 }
 void render_rays(t_player *player)
 {
@@ -210,9 +212,9 @@ int next_frame(int key, t_player *player)
 		player->walkDirection = -1;
 	if (key == 2 || key == 124)
 		player->turnDirection = 1;
+	mlx_clear_window(player->i.mlx, player->i.win);
 	change_player_status(player);
 	render_map(*player);
-	render_player(*player);
 	render_rays(player);
 	player->walkDirection = 0;
 	player->turnDirection = 0;
