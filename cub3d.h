@@ -10,6 +10,10 @@
 #define FOV      (60 * (M_PI / 180))
 #define MINIMAP_FACTOR 0.3
 
+float fixed_mul(double a, double b);
+float fixed_oth(float a, float b);
+float fixed_minus(float a, float b);
+float fixed_add(float a, float b);
 typedef struct s_img
 {
 	char	*relative_path;
@@ -49,7 +53,7 @@ typedef struct s_player
 
 typedef struct  s_data {
 	void    *img;
-	char    *buffer;
+	char    *addr;
 	int             bits_per_pixel;
 	int             line_length;
 	int             endian;
