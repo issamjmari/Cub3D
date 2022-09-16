@@ -222,21 +222,19 @@ void render_rays(t_player *player, t_ray **rays)
 	}
 }
 
-void put_stripin3D(t_player *player, float project_height, int index)
+void put_stripin3D(t_player *player, int project_height, int index)
 {
-	int color = 0xFFFFFF;
+	int color = 15000678;
     t_data  img;
 
-    player->i.mlx = mlx_init();
-    img.img = mlx_new_image(player->i.mlx, 2, (8 * 50 / 2));
-    void *win = mlx_new_window(mlx, 15 * 50, 8 * 50, "Cub3d");
+    img.img = mlx_new_image(player->i.mlx, 1, project_height);
     img.buffer = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
                                                             &img.endian);
-    for(int i = 0; i < (8 * 50) / 2; i++)
+    for(int i = 0; i < project_height; ++i)
     {
-            for(int j = 0; j < 10; j++)
+            for(int j = 0; j < 1; ++j)
             {
-                    int pixel = (i * img.line_length) + (j * 4);
+            int pixel = (i * img.line_length) + (j * 4);
             if (img.endian == 1)        // Most significant (Alpha) byte first
             {
                 img.buffer[pixel + 0] = (color >> 24);
@@ -253,22 +251,22 @@ void put_stripin3D(t_player *player, float project_height, int index)
             }
             }
     }
-    mlx_put_image_to_window(mlx, win, img.img, 0, (8 * 50) / 4);
-    mlx_loop(mlx);
+    mlx_put_image_to_window(player->i.mlx, player->i.win, img.img, index, (750 / 2) - (project_height / 2));
+	mlx_destroy_image(player->i.mlx, img.img);
 }
 void render_3D(t_player *player, t_ray *rays)
 {
 	int i = 0;
-	float distance_toprojection;
-	float projection_wall_height;
+	int distance_toprojection;
+	int projection_wall_height;
 
 	distance_toprojection = 375 / tan((FOV / 2));
 	while (i < 750)
 	{
-		projection_wall_height = (TILE_SIZE / rays[i].distance) * distance_toprojection;
+		projection_wall_height = (TILE_SIZE / (rays[i].distance)) * distance_toprojection;
 		put_stripin3D(player, projection_wall_height, i);
+		i++;
 	}
-	
 }
 int next_frame(int key, t_player *player)
 {
@@ -305,7 +303,7 @@ int main()
 	player.turnDirection = 0;
 	player.walkDirection = 0;
 	player.rotationAngle = (M_PI) / 2;
-	player.walkSpeed = 0.15 * TILE_SIZE;
+	player.walkSpeed = 0.25 * TILE_SIZE;
 	player.turnSpeed = 10 * (M_PI / 180);
 	data.mlx = mlx_init();
 	data.win = mlx_new_window(data.mlx, 15 * 50, 8 * 50, "Cub3d");

@@ -1,5 +1,5 @@
 SRC = cub3d.c
-CFLAGS =  -lmlx -framework OpenGL -framework AppKit -fsanitize=address
+CFLAGS =  -lmlx -framework OpenGL -framework AppKit #-fsanitize=address
 NAME = cub3d
 
 all : $(NAME)
