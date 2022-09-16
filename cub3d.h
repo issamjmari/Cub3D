@@ -22,6 +22,7 @@ typedef struct s_img
 
 typedef struct s_ray
 {
+	float distance;
 	float ray_angle;
 	float Wallhitx;
 	float Wallhity;
@@ -45,5 +46,13 @@ typedef struct s_player
 	float turnSpeed;
 	t_img	i;
 }	t_player;
+
+typedef struct  s_data {
+	void    *img;
+	char    *buffer;
+	int             bits_per_pixel;
+	int             line_length;
+	int             endian;
+}	t_data;
 
 #endif

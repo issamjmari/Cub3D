@@ -88,8 +88,21 @@ float distance(t_player *p, float Wallx, float Wally)
 {
 	return (sqrt((Wallx - p->x) * (Wallx - p->x) + (Wally - p->y) * (Wally - p->y)));
 }
-
-void cast_ray(t_player *player, float angle, t_ray ray)
+void fill_data(t_ray *ray, float angle, float hitx, float hity,\
+int was_vertical, int isRayleft, int isRayright, int isRayup, int isRaydown, int rayid,\
+float distance)
+{
+	ray[rayid].distance = distance;
+	ray[rayid].ray_angle = angle;
+	ray[rayid].Wallhitx = hitx;
+	ray[rayid].Wallhity = hity;
+	ray[rayid].was_hit_vertical = was_vertical;
+	ray[rayid].isRay_down = isRaydown;
+	ray[rayid].isRay_up = isRayup;
+	ray[rayid].isRay_left = isRayleft;
+	ray[rayid].isRay_right = isRayright;
+}
+void cast_ray(t_player *player, float angle, t_ray *ray, int rayid)
 {
 	float distance_check1;
 	float distance_check2;
@@ -183,27 +196,85 @@ void cast_ray(t_player *player, float angle, t_ray ray)
 	else
 		distance_check2 = MAX_INT;
 	if(distance_check1 < distance_check2)
+	{
+		fill_data(ray, angle, WallHorzx, WallHorzy, 0, isRayleft, isRayright,\
+isRayUp, isRayDown, rayid, distance_check1);
 		draw_line(player->i.mlx, player->i.win, (player->x), (player->y), (horz_Wallhitx),\
 horz_Wallhity, 15000680);
+	}
 	else
+	{
+		fill_data(ray, angle, vert_Wallhitx, vert_Wallhity, 1, isRayleft, isRayright,\
+isRayUp, isRayDown, rayid, distance_check2);
 		draw_line(player->i.mlx, player->i.win, (player->x), (player->y), (vert_Wallhitx),\
 vert_Wallhity, 15000680);
+	}
 }
-void render_rays(t_player *player)
+void render_rays(t_player *player, t_ray **rays)
 {
 	float angle = player->rotationAngle - (FOV / 2);
-	t_ray rays[500];
-
 	int rayid = 0;
-	while (rayid < 120)
+	while (rayid < 750)
 	{
-		cast_ray(player, angle, rays[rayid]);
-		angle += (FOV / (120));
+		cast_ray(player, angle, *rays, rayid);
+		angle += (FOV / (750));
 		rayid++;
 	}
 }
+
+void put_stripin3D(t_player *player, float project_height, int index)
+{
+	int color = 0xFFFFFF;
+    t_data  img;
+
+    player->i.mlx = mlx_init();
+    img.img = mlx_new_image(player->i.mlx, 2, (8 * 50 / 2));
+    void *win = mlx_new_window(mlx, 15 * 50, 8 * 50, "Cub3d");
+    img.buffer = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
+                                                            &img.endian);
+    for(int i = 0; i < (8 * 50) / 2; i++)
+    {
+            for(int j = 0; j < 10; j++)
+            {
+                    int pixel = (i * img.line_length) + (j * 4);
+            if (img.endian == 1)        // Most significant (Alpha) byte first
+            {
+                img.buffer[pixel + 0] = (color >> 24);
+                img.buffer[pixel + 1] = (color >> 16) & 0xFF;
+                img.buffer[pixel + 2] = (color >> 8) & 0xFF;
+                img.buffer[pixel + 3] = (color) & 0xFF;
+            }
+            else if (img.endian == 0)   // Least significant (Blue) byte first
+            {
+                img.buffer[pixel + 0] = (color) & 0xFF;
+                img.buffer[pixel + 1] = (color >> 8) & 0xFF;
+                img.buffer[pixel + 2] = (color >> 16) & 0xFF;
+                img.buffer[pixel + 3] = (color >> 24);
+            }
+            }
+    }
+    mlx_put_image_to_window(mlx, win, img.img, 0, (8 * 50) / 4);
+    mlx_loop(mlx);
+}
+void render_3D(t_player *player, t_ray *rays)
+{
+	int i = 0;
+	float distance_toprojection;
+	float projection_wall_height;
+
+	distance_toprojection = 375 / tan((FOV / 2));
+	while (i < 750)
+	{
+		projection_wall_height = (TILE_SIZE / rays[i].distance) * distance_toprojection;
+		put_stripin3D(player, projection_wall_height, i);
+	}
+	
+}
 int next_frame(int key, t_player *player)
 {
+	t_ray *rays;
+
+	rays = malloc((15 * 50) * sizeof(t_ray));
 	if (key == 13 || key == 126)
 		player->walkDirection = 1;
 	if (key == 0 || key == 123)
@@ -215,7 +286,9 @@ int next_frame(int key, t_player *player)
 	mlx_clear_window(player->i.mlx, player->i.win);
 	change_player_status(player);
 	render_map(*player);
-	render_rays(player);
+	render_rays(player, &rays);
+	render_3D(player, rays);
+	free(rays);
 	player->walkDirection = 0;
 	player->turnDirection = 0;
 	return 0;
