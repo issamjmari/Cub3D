@@ -20,33 +20,39 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-void	ft_draw_elem(int x, int y, void *path, t_img i)
+void	ft_draw_elem(int x, int y, t_img i, t_data *data, int color)
 {
-	int	height;
-	int	width;
-
-	i.img = mlx_xpm_file_to_image(i.mlx, path, &width, &height);
-	mlx_put_image_to_window (i.mlx, i.win, i.img, (x * 50) * MINIMAP_FACTOR, (y * 50) * MINIMAP_FACTOR);
+	int end_y = ((y * 50) + 50) * MINIMAP_FACTOR;
+	int end_x = ((x * 50) + 50) * MINIMAP_FACTOR;
+	int start_x;
+	int start_y = (y * 50) * MINIMAP_FACTOR;
+	while (start_y < end_y)
+	{
+		start_x = (x * 50) * MINIMAP_FACTOR;
+		while (start_x < end_x)
+			my_mlx_pixel_put(data, start_x++, start_y, color);
+		start_y++;
+	}
 }
-void draw_line(void *mlx, void *win, float beginX, float beginY, float endX, float endY, int color)
+void draw_line(t_player *player, float endX, float endY, int color)
 {
-	double deltaX = endX - beginX;
-	double deltaY = endY - beginY;
+	double deltaX = (endX - player->x);
+	double deltaY = (endY - player->y);
 	int pixels = sqrt((deltaX * deltaX) + (deltaY * deltaY));
 	deltaX /= pixels;
 	deltaY /= pixels;
-	double pixelX = beginX;
-	double pixelY = beginY;
+	double pixelX = player->x;
+	double pixelY = player->y;
 	while (pixels)
 	{
-	    mlx_pixel_put(mlx, win, pixelX * MINIMAP_FACTOR, pixelY * MINIMAP_FACTOR, color);
+	    my_mlx_pixel_put(&player->img, pixelX * MINIMAP_FACTOR, pixelY * MINIMAP_FACTOR, color);
 	    pixelX += deltaX;
 	    pixelY += deltaY;
 	    --pixels;
 	}
 }
 
-void render_map(t_player p)
+void render_map(t_player *p)
 {
 	int y = 0;
 	int x;
@@ -56,24 +62,15 @@ void render_map(t_player p)
 		while (x < 15)
 		{
 			if(arr[y][x] == '1')
-				ft_draw_elem(x, y, "black.xpm", p.i);
+				ft_draw_elem(x, y, p->i, &p->img, 0);
 			else
-				ft_draw_elem(x, y, "pure_white.xpm", p.i);
+				ft_draw_elem(x, y, p->i, &p->img, 0xFFFFFF);
 			x++;
 		}
 		y++;
 	}
 }
-void render_player(t_player p)
-{
-	float start_x = p.x;
-	float start_y = p.y;
-	float end_x = cos(p.rotationAngle) * 90;
-	float end_y = sin(p.rotationAngle) * 90;
-	draw_line(p.i.mlx, p.i.win, (start_x), start_y, \
-	(start_x + end_x), (start_y + end_y),
-	16711680);
-}
+
 int isWall(float a, float b)
 {
 	int wallcheckx =  floor(a / 50);
@@ -228,7 +225,7 @@ void get_rays(t_player *player, t_ray **rays)
 
 void put_stripin3D(t_player *player, int project_height, int index)
 {
-	int color = 15000678;
+	int color = 10550100;
     t_data  img;
 	int x;
 	int y;
@@ -240,7 +237,7 @@ void put_stripin3D(t_player *player, int project_height, int index)
     	&img.endian);
 	while (y < project_height)
 		my_mlx_pixel_put(&img, x, y++, color);
-	mlx_put_image_to_window(player->i.mlx, player->i.win, img.img, index, (750 / 2) - (project_height / 2));
+	mlx_put_image_to_window(player->i.mlx, player->i.win, img.img, index, (400 / 2) - (project_height / 2));
 	mlx_destroy_image(player->i.mlx, img.img);
 }
 void render_3D(t_player *player, t_ray *rays)
@@ -248,11 +245,10 @@ void render_3D(t_player *player, t_ray *rays)
 	int i = 0;
 	int distance_toprojection;
 	int projection_wall_height;
-
 	distance_toprojection = 375 / tan((FOV / 2));
 	while (i < 750)
 	{
-		projection_wall_height = (TILE_SIZE / (rays[i].distance)) * distance_toprojection;
+		projection_wall_height = (TILE_SIZE / (rays[i].distance * cos(rays[i].ray_angle - player->rotationAngle))) * distance_toprojection;
 		put_stripin3D(player, projection_wall_height, i);
 		i++;
 	}
@@ -261,12 +257,18 @@ void render_3D(t_player *player, t_ray *rays)
 void render_minimap(t_player *player, t_ray *rays)
 {
 	int i = 0;
+	player->img.img = mlx_new_image(player->i.mlx, 750 * MINIMAP_FACTOR, 400 * MINIMAP_FACTOR);
+	player->img.addr = mlx_get_data_addr(player->img.img, &player->img.bits_per_pixel, &player->img.line_length,
+    	&player->img.endian);
+	render_map(player);
 	while (i < 750)
 	{
-		draw_line(player->i.mlx, player->i.win, player->x, player->y, rays[i].Wallhitx, rays[i].Wallhity, 15000678);
+		draw_line(player, rays[i].Wallhitx, rays[i].Wallhity, 15000678);
 		i++;
 	}
+	mlx_put_image_to_window (player->i.mlx, player->i.win, player->img.img, 0, 0);
 }
+
 int next_frame(int key, t_player *player)
 {
 	t_ray *rays;
@@ -281,8 +283,8 @@ int next_frame(int key, t_player *player)
 	if (key == 2 || key == 124)
 		player->turnDirection = 1;
 	mlx_clear_window(player->i.mlx, player->i.win);
+	mlx_destroy_image(player->i.mlx, player->img.img);
 	change_player_status(player);
-	render_map(*player);
 	get_rays(player, &rays);
 	render_3D(player, rays);
 	render_minimap(player, rays);
@@ -291,7 +293,10 @@ int next_frame(int key, t_player *player)
 	player->turnDirection = 0;
 	return 0;
 }
-
+int stop()
+{
+	return 0;
+}
 int main()
 {
 	t_img data;
@@ -304,12 +309,17 @@ int main()
 	player.walkDirection = 0;
 	player.rotationAngle = (M_PI) / 2;
 	player.walkSpeed = 0.30 * TILE_SIZE;
-	player.turnSpeed = 10 * (M_PI / 180);
+	player.turnSpeed = 25 * (M_PI / 180);
 	data.mlx = mlx_init();
 	data.win = mlx_new_window(data.mlx, 15 * 50, 8 * 50, "Cub3d");
 	player.i = data;
-	render_map(player);
-	render_player(player);
-	mlx_key_hook(data.win, next_frame, &player);
+	player.img.img = mlx_new_image(data.mlx, 750 * MINIMAP_FACTOR, 400 * MINIMAP_FACTOR);
+	player.img.addr = mlx_get_data_addr(player.img.img, &player.img.bits_per_pixel, &player.img.line_length,
+    	&player.img.endian);
+	render_map(&player);
+	mlx_put_image_to_window(player.i.mlx, player.i.win, player.img.img, 0, 0);
+	// mlx_key_hook(data.win, next_frame, &player);
+	mlx_hook(data.win, 2, 0, next_frame, &player);
+	mlx_hook(data.win, 3, 0, stop, NULL);
 	mlx_loop(data.mlx);
 }
