@@ -240,12 +240,15 @@ void put_stripin3D(t_player *player, int project_height, int index, int color)
 	y = 0;
 	ceil_y = 0;
     img.img = mlx_new_image(player->i.mlx, 1, project_height);
-	ceil.img = mlx_new_image(player->i.mlx, 1, (put_y) - 1);
+	// if(put_y > 0)
+	// 	ceil.img = mlx_new_image(player->i.mlx, 1, put_y - 1);
+	if(index == 0)
+		printf("%d\n", ((400 / 2) - (project_height / 2)) - 1);
     img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
     	&img.endian);
 	// ceil.addr = mlx_get_data_addr(ceil.img, &ceil.bits_per_pixel, &ceil.line_length,
     // 	&ceil.endian);
-	// while (ceil_y < (put_y) - 1)
+	// while (ceil_y < put_y -)
 	// 	my_mlx_pixel_put(&img, 0, ceil_y++, 0xFFFFFF);
 	while (y < project_height)
 		my_mlx_pixel_put(&img, 0, y++, color);
