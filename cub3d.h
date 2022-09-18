@@ -57,6 +57,7 @@ typedef struct s_player
 	float turnSpeed;
 	t_img	i;
 	t_data img;
+	t_ray  *ray;
 }	t_player;
 
 
