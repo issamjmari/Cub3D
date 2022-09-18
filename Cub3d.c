@@ -62,7 +62,7 @@ void render_map(t_player *p)
 		while (x < 15)
 		{
 			if(arr[y][x] == '1')
-				ft_draw_elem(x, y, p->i, &p->img, 0xFF0000);
+				ft_draw_elem(x, y, p->i, &p->img, 0x00FF00);
 			else
 				ft_draw_elem(x, y, p->i, &p->img, 0x0000FF);
 			x++;
@@ -228,18 +228,31 @@ void get_rays(t_player *player, t_ray **rays)
 void put_stripin3D(t_player *player, int project_height, int index, int color)
 {
     t_data  img;
-	int x;
+	t_data ceil;
+	t_data floor;
+	int put_y;
 	int y;
+	int ceil_y;
 
-	x = 0;
+	put_y = (400 / 2) - (project_height / 2);
+	if(put_y < 0)
+		put_y = 0;
 	y = 0;
+	ceil_y = 0;
     img.img = mlx_new_image(player->i.mlx, 1, project_height);
+	ceil.img = mlx_new_image(player->i.mlx, 1, (put_y) - 1);
     img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length,
     	&img.endian);
+	// ceil.addr = mlx_get_data_addr(ceil.img, &ceil.bits_per_pixel, &ceil.line_length,
+    // 	&ceil.endian);
+	// while (ceil_y < (put_y) - 1)
+	// 	my_mlx_pixel_put(&img, 0, ceil_y++, 0xFFFFFF);
 	while (y < project_height)
-		my_mlx_pixel_put(&img, x, y++, color);
-	mlx_put_image_to_window(player->i.mlx, player->i.win, img.img, index, (400 / 2) - (project_height / 2));
+		my_mlx_pixel_put(&img, 0, y++, color);
+	mlx_put_image_to_window(player->i.mlx, player->i.win, img.img, index, put_y);
+	// mlx_put_image_to_window(player->i.mlx, player->i.win, img.img, index, 0);
 	mlx_destroy_image(player->i.mlx, img.img);
+	// mlx_destroy_image(player->i.mlx, ceil.img);
 }
 void render_3D(t_player *player, t_ray *rays)
 {
