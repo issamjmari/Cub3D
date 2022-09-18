@@ -1,5 +1,5 @@
 SRC = cub3d.c fixed_point.c
-CFLAGS =  -lmlx -framework OpenGL -framework AppKit
+CFLAGS =  -lmlx -framework OpenGL -framework AppKit -fsanitize=address
 NAME = cub3d
 
 all : $(NAME)
