@@ -62,9 +62,9 @@ void render_map(t_player *p)
 		while (x < 15)
 		{
 			if(arr[y][x] == '1')
-				ft_draw_elem(x, y, p->i, &p->img, 0);
+				ft_draw_elem(x, y, p->i, &p->img, 0xFF0000);
 			else
-				ft_draw_elem(x, y, p->i, &p->img, 0xFFFFFF);
+				ft_draw_elem(x, y, p->i, &p->img, 0x0000FF);
 			x++;
 		}
 		y++;
@@ -73,6 +73,8 @@ void render_map(t_player *p)
 
 int isWall(float a, float b)
 {
+	if(a < 0 || a > 750 || b < 0 || b > 750)
+		return 1;
 	int wallcheckx =  floor(a / 50);
 	int wallchecky = floor(b / 50);
 	return (arr[wallchecky][wallcheckx] == '1');
@@ -223,9 +225,8 @@ void get_rays(t_player *player, t_ray **rays)
 	}
 }
 
-void put_stripin3D(t_player *player, int project_height, int index)
+void put_stripin3D(t_player *player, int project_height, int index, int color)
 {
-	int color = 10550100;
     t_data  img;
 	int x;
 	int y;
@@ -249,7 +250,10 @@ void render_3D(t_player *player, t_ray *rays)
 	while (i < 750)
 	{
 		projection_wall_height = (TILE_SIZE / (rays[i].distance * cos(rays[i].ray_angle - player->rotationAngle))) * distance_toprojection;
-		put_stripin3D(player, projection_wall_height, i);
+		if(rays[i].was_hit_vertical)
+			put_stripin3D(player, projection_wall_height, i, 0x25FF0000);
+		else
+			put_stripin3D(player, projection_wall_height, i, 0x00FF0000);
 		i++;
 	}
 }
@@ -263,7 +267,7 @@ void render_minimap(t_player *player, t_ray *rays)
 	render_map(player);
 	while (i < 750)
 	{
-		draw_line(player, rays[i].Wallhitx, rays[i].Wallhity, 15000678);
+		draw_line(player, rays[i].Wallhitx, rays[i].Wallhity, 0xCFCDFF);
 		i++;
 	}
 	mlx_put_image_to_window (player->i.mlx, player->i.win, player->img.img, 0, 0);
@@ -309,7 +313,7 @@ int main()
 	player.walkDirection = 0;
 	player.rotationAngle = (M_PI) / 2;
 	player.walkSpeed = 0.30 * TILE_SIZE;
-	player.turnSpeed = 25 * (M_PI / 180);
+	player.turnSpeed = 10 * (M_PI / 180);
 	data.mlx = mlx_init();
 	data.win = mlx_new_window(data.mlx, 15 * 50, 8 * 50, "Cub3d");
 	player.i = data;
@@ -318,7 +322,6 @@ int main()
     	&player.img.endian);
 	render_map(&player);
 	mlx_put_image_to_window(player.i.mlx, player.i.win, player.img.img, 0, 0);
-	// mlx_key_hook(data.win, next_frame, &player);
 	mlx_hook(data.win, 2, 0, next_frame, &player);
 	mlx_hook(data.win, 3, 0, stop, NULL);
 	mlx_loop(data.mlx);
