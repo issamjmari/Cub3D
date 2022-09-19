@@ -218,12 +218,17 @@ isRayUp, isRayDown, rayid, distance_check2);
 }
 void get_rays(t_player *player)
 {
-	float angle = player->rotationAngle - (FOV / 2);
+	float angle1 = player->rotationAngle - (FOV / 2);
 	int rayid = 0;
 	while (rayid < 750)
 	{
-		cast_ray(player, angle, rayid);
-		angle += (FOV / (750));
+		if(rayid <= 10)
+			printf("angle 1 %f\n", angle1);
+		float angle2 = player->rotationAngle + atan((rayid - 375) / (375 / tan((FOV / 2))));
+		if(rayid <= 10)
+			printf("angle 2 %f\n", angle2);
+		cast_ray(player, angle2, rayid);
+		angle1 += (FOV / 750);
 		rayid++;
 	}
 }
@@ -244,11 +249,11 @@ void put_stripin3D(t_player *player, int project_height, int index, int color)
 	if(put_y > 0)
 	{
 		while (ceil_y < put_y)
-			my_mlx_pixel_put(&player->img, index, ceil_y++, 0xABCDEF);
+			my_mlx_pixel_put(&player->img, index, ceil_y++, 0x25ABCDEF);
 		while (ceil_y < floor_y)
 			my_mlx_pixel_put(&player->img, index, ceil_y++, color);
 		while (floor_y < 400)
-			my_mlx_pixel_put(&player->img, index, floor_y++, 0xFFFF00);
+			my_mlx_pixel_put(&player->img, index, floor_y++, 0x25FFFF00);
 	}
 	else
 	{
