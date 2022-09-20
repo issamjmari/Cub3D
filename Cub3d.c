@@ -90,8 +90,8 @@ void change_player_status(t_player *player)
 	float newrotation;
 	if(player->rotationAngle != M_PI / 2)
 		newrotation = player->rotationAngle - (M_PI / 2);
-	float movea;
-	float moveb;
+	float movea = player->x + 15 * player->moveDirection * cos(player->rotationAngle);
+	float moveb = player->y + 15 * player->moveDirection * sin(player->rotationAngle);
 	float a = player->x + cos(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
 	float b = player->y + sin(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
 	if(!isWall(a, b))
@@ -101,8 +101,6 @@ void change_player_status(t_player *player)
 	}
 	if(player->moveDirection != 0)
 	{
-		movea = player->x + (15 * player->moveDirection * cos(player->rotationAngle));
-		moveb = player->y + (15 * player->moveDirection * sin(player->rotationAngle));
 		if(!isWall(movea, moveb))
 		{
 			player->x = movea;
