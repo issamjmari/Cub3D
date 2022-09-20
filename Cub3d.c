@@ -101,8 +101,8 @@ void change_player_status(t_player *player)
 	}
 	if(player->moveDirection != 0)
 	{
-		movea = player->x + (15 * player->moveDirection * cos(newrotation));
-		moveb = player->y + (15 * player->moveDirection * sin(newrotation));
+		movea = player->x + (15 * player->moveDirection * cos(player->rotationAngle));
+		moveb = player->y + (15 * player->moveDirection * sin(player->rotationAngle));
 		if(!isWall(movea, moveb))
 		{
 			player->x = movea;
