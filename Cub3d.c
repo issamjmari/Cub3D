@@ -22,13 +22,13 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 void	ft_draw_elem(int x, int y, t_player *player, int color)
 {
-	int end_y = ((y * 50) + 50) * MINIMAP_FACTOR;
-	int end_x = ((x * 50) + 50) * MINIMAP_FACTOR;
+	int end_y = ((y * 64) + 64) * MINIMAP_FACTOR;
+	int end_x = ((x * 64) + 64) * MINIMAP_FACTOR;
 	int start_x;
-	int start_y = (y * 50) * MINIMAP_FACTOR;
+	int start_y = (y * 64) * MINIMAP_FACTOR;
 	while (start_y < end_y)
 	{
-		start_x = (x * 50) * MINIMAP_FACTOR;
+		start_x = (x * 64) * MINIMAP_FACTOR;
 		while (start_x < end_x)
 		{
 			my_mlx_pixel_put(&player->img, (start_x), (start_y), color);
@@ -48,7 +48,7 @@ void draw_line(t_player *player, float endX, float endY, int color)
 	double pixelY = player->y;
 	while (pixels)
 	{
-	    my_mlx_pixel_put(&player->img, (pixelX * MINIMAP_FACTOR), (pixelY * MINIMAP_FACTOR), color);
+	    my_mlx_pixel_put(&player->img, ((pixelX) * MINIMAP_FACTOR), ((pixelY) * MINIMAP_FACTOR), color);
 	    pixelX += deltaX;
 	    pixelY += deltaY;
 	    --pixels;
@@ -76,10 +76,10 @@ void render_map(t_player *p)
 
 int isWall(float a, float b)
 {
-	if(a < 0 || a > 750 || b < 0 || b > 400)
+	if(a < 0 || a > 960 || b < 0 || b > 512)
 		return 1;
-	int wallcheckx =  floor(a / 50);
-	int wallchecky = floor(b / 50);
+	int wallcheckx =  floor(a / 64);
+	int wallchecky = floor(b / 64);
 	if(wallcheckx > 14 && wallchecky > 7)
 		return 1;
 	return (arr[wallchecky][wallcheckx] == '1');
@@ -90,8 +90,8 @@ void change_player_status(t_player *player)
 	float newrotation;
 	if(player->rotationAngle != M_PI / 2)
 		newrotation = player->rotationAngle - (M_PI / 2);
-	float movea = player->x + 15 * player->moveDirection * cos(player->rotationAngle);
-	float moveb = player->y + 15 * player->moveDirection * sin(player->rotationAngle);
+	float movea;
+	float moveb;
 	float a = player->x + cos(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
 	float b = player->y + sin(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
 	if(!isWall(a, b))
@@ -101,6 +101,8 @@ void change_player_status(t_player *player)
 	}
 	if(player->moveDirection != 0)
 	{
+		movea = player->x + (15 * player->moveDirection * cos(newrotation));
+		moveb = player->y + (15 * player->moveDirection * sin(newrotation));
 		if(!isWall(movea, moveb))
 		{
 			player->x = movea;
@@ -156,7 +158,7 @@ void cast_ray(t_player *player, float angle, int rayid)
 	float WallHorzy = horz_y_intercept;
 	float horz_Wallhitx = 0;
 	float horz_Wallhity = 0;
-	while (WallHorzx >= 0 && WallHorzx <= 750 && WallHorzy >= 0 && WallHorzy <= 400)
+	while (WallHorzx >= 0 && WallHorzx <= 960 && WallHorzy >= 0 && WallHorzy <= 512)
 	{
 		float horz_tocheckx = WallHorzx;
 		float horz_tochecky = WallHorzy;
@@ -204,7 +206,7 @@ void cast_ray(t_player *player, float angle, int rayid)
 		{
 			found_vert = TRUE;
 			if(vert_WallHorzx <= 1)
-				vert_Wallhitx = vert_WallHorzx - 50;
+				vert_Wallhitx = vert_WallHorzx - 64;
 			else
 				vert_Wallhitx = vert_WallHorzx;
 			vert_Wallhity = vert_WallHorzy;
@@ -234,42 +236,68 @@ isRayUp, isRayDown, rayid, distance_check2);
 void get_rays(t_player *player)
 {
 	int rayid = 0;
-	float projec = (375 / tan((FOV / 2)));
-	while (rayid < 750)
+	float projec = (480 / tan((FOV / 2)));
+	while (rayid < 960)
 	{
-		float angle2 = player->rotationAngle + atan((rayid - (750 / 2)) / projec);
+		float angle2 = player->rotationAngle + atan((rayid - (960 / 2)) / projec);
 		cast_ray(player, angle2, rayid);
 		rayid++;
 	}
 }
 
-void put_stripin3D(t_player *player, float project_height, int index, int color)
+int get_color(int y, int x, t_player *player)
+{
+	char *dst;
+
+	dst = player->picture.addr + (y * player->picture.line_length + x * (player->picture.bits_per_pixel / 8));
+	return (*(unsigned int *) dst);
+}
+
+void put_stripin3D(t_player *player, float project_height, int index)
 {
 	int put_y;
 	int y;
 	int ceil_y;
 	int floor_y;
 	int stock;
-
-	put_y = (int) ((400 / 2) - (project_height / 2));
+	int Xoffset;
+	int Y_loop;
+	if(player->ray[index].was_hit_vertical)
+		Xoffset = (int)(player->ray[index].Wallhity) % TILE_SIZE;
+	else
+		Xoffset = (int)(player->ray[index].Wallhitx) % TILE_SIZE;
+	put_y = (int) ((512 / 2) - (project_height / 2));
 	if(put_y < 0)
 		put_y = 0;
 	ceil_y = 0;
 	floor_y = put_y + project_height;
+	Y_loop = put_y;
 	if(put_y > 0)
 	{
 		while (ceil_y < put_y)
 			my_mlx_pixel_put(&player->img, index, ceil_y++, 0x25ABCDEF);
 		while (ceil_y < floor_y)
-			my_mlx_pixel_put(&player->img, index, ceil_y++, color);
-		while (floor_y < 400)
-			my_mlx_pixel_put(&player->img, index, floor_y++, 0x25FFFF00);
+		{
+			int Yoffset = ((Y_loop + ((project_height / 2) - (512 / 2))) * ((float) (TILE_SIZE / project_height)));
+			if(Yoffset > 63 || Xoffset > 63)
+				break ;
+			my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, player));
+			Y_loop++;
+		}
+		while (floor_y < 512)
+			my_mlx_pixel_put(&player->img, index, floor_y++, 0xDF3232);
 	}
 	else
 	{
 		y = 0;
-		while (y < 400)
-			my_mlx_pixel_put(&player->img, index, y++, color);
+		while (y < 512)
+		{
+			int Yoffset = (Y_loop + ((project_height / 2) - (512 / 2))) * ((float) (TILE_SIZE / project_height));
+			if(Yoffset > 63 || Xoffset > 63)
+				break ;
+			my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, player));
+			Y_loop++;
+		}
 	}
 }
 void render_3D(t_player *player)
@@ -277,14 +305,11 @@ void render_3D(t_player *player)
 	int i = 0;
 	float distance_toprojection;
 	float projection_wall_height;
-	distance_toprojection = 375 / tan((FOV / 2));
-	while (i < 750)
+	distance_toprojection = 480 / tan((FOV / 2));
+	while (i < 960)
 	{
 		projection_wall_height = (TILE_SIZE / (player->ray[i].distance * cos(player->ray[i].ray_angle - player->rotationAngle))) * distance_toprojection;
-		if(player->ray[i].was_hit_vertical)
-			put_stripin3D(player, projection_wall_height, i, 0x25FFFFFF);
-		else
-			put_stripin3D(player, projection_wall_height, i, 0x00FFFFFF);
+		put_stripin3D(player, projection_wall_height, i);
 		i++;
 	}
 }
@@ -293,7 +318,7 @@ void render_minimap(t_player *player)
 {
 	int i = 0;
 	render_map(player);
-	while (i < 750)
+	while (i < 960)
 	{
 		draw_line(player, player->ray[i].Wallhitx, player->ray[i].Wallhity, 0xCFCDFF);
 		i++;
@@ -302,7 +327,6 @@ void render_minimap(t_player *player)
 
 int next_frame(int key, t_player *player)
 {
-	printf("%d\n", key);
 	if (key == 13 || key == 126)
 		player->walkDirection = 1;
 	if (key == 0)
@@ -333,7 +357,6 @@ int stop()
 int main()
 {
 	t_ray *rays;
-
 	t_img data;
 	t_player player;
 	player.x = (15 / 2) * TILE_SIZE;
@@ -346,12 +369,15 @@ int main()
 	player.walkSpeed = 0.30 * TILE_SIZE;
 	player.turnSpeed = 10 * (M_PI / 180);
 	data.mlx = mlx_init();
-	data.win = mlx_new_window(data.mlx, 750, 400, "Cub3d");
-	player.ray = malloc((750) * sizeof(t_ray));
+	data.win = mlx_new_window(data.mlx, 960, 512, "Cub3d");
+	player.ray = malloc((960) * sizeof(t_ray));
 	player.i = data;
-	player.img.img = mlx_new_image(data.mlx, 750, 400);
+	player.img.img = mlx_new_image(data.mlx, 960, 512);
 	player.img.addr = mlx_get_data_addr(player.img.img, &player.img.bits_per_pixel, &player.img.line_length,
     	&player.img.endian);
+	player.picture.img = mlx_xpm_file_to_image(data.mlx, "pi.xpm", &player.pic_width,&player.pic_height);
+	player.picture.addr = mlx_get_data_addr(player.picture.img, &player.picture.bits_per_pixel, &player.picture.line_length,
+    	&player.picture.endian);
 	get_rays(&player);
 	render_3D(&player);
 	render_minimap(&player);

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #define FALSE 0
 #define TRUE 1
-#define TILE_SIZE 50
+#define TILE_SIZE 64
 #define MAX_INT  2147483647
 #define FOV      (60 * (M_PI / 180))
 #define MINIMAP_FACTOR 0.3
@@ -56,6 +56,9 @@ typedef struct s_player
 	float rotationAngle;
 	float walkSpeed;
 	float turnSpeed;
+	int pic_width;
+	int pic_height;
+	t_data picture;
 	t_img	i;
 	t_data img;
 	t_ray  *ray;
