@@ -11,13 +11,13 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 void	ft_draw_elem(int x, int y, t_player *player, int color)
 {
-	int end_y = ((y * 64) + 64)  ;
-	int end_x = ((x * 64) + 64)  ;
+	int end_y = ((y * 64) + 64) * MINIMAP_FACTOR  ;
+	int end_x = ((x * 64) + 64) * MINIMAP_FACTOR ;
 	int start_x;
-	int start_y = (y * 64)  ;
+	int start_y = (y * 64)  * MINIMAP_FACTOR;
 	while (start_y < end_y)
 	{
-		start_x = (x * 64)  ;
+		start_x = (x * 64) * MINIMAP_FACTOR ;
 		while (start_x < end_x)
 		{
 			my_mlx_pixel_put(&player->img, (start_x), (start_y), color);
@@ -37,7 +37,7 @@ void draw_line(t_player *player, float endX, float endY, int color)
 	double pixelY = player->y;
 	while (pixels)
 	{
-	    my_mlx_pixel_put(&player->img, ((pixelX)  ), ((pixelY)  ), color);
+	    my_mlx_pixel_put(&player->img, ((pixelX) * MINIMAP_FACTOR ), ((pixelY) * MINIMAP_FACTOR ), color);
 	    pixelX += deltaX;
 	    pixelY += deltaY;
 	    --pixels;
@@ -336,7 +336,7 @@ int next_frame(int key, t_player *player)
 	mlx_clear_window(player->i.mlx, player->i.win);
 	change_player_status(player);
 	get_rays(player);
-	// render_3D(player);
+	render_3D(player);
 	render_minimap(player);
 	mlx_put_image_to_window(player->i.mlx, player->i.win, player->img.img, 0, 0);
 	player->walkDirection = 0;
@@ -413,7 +413,7 @@ void start_game(t_directions *path)
     	&player.picture.endian);
 	player.data = path;
 	get_rays(&player);
-	// render_3D(&player);
+	render_3D(&player);
 	render_minimap(&player);
 	mlx_put_image_to_window(player.i.mlx, player.i.win, player.img.img, 0, 0);
 	mlx_hook(data.win, 2, 0, next_frame, &player);
