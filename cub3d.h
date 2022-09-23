@@ -115,8 +115,8 @@ typedef struct s_player
 {
 	float		x;
 	float		y;
-	float height;
-	float width;
+	int height;
+	int width;
 	int turnDirection;
 	int walkDirection;
 	int moveDirection;

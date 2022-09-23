@@ -122,7 +122,10 @@ void	correct_position_for_space(char **map, int map_height)
 			if (map[i][j] == ZERO)
 			{
                 if ((i < map_height - 1 && j > ft_strlen(map[i + 1]) - 1) || (i < map_height - 1 && j > ft_strlen(map[i - 1]) - 1))
+				{
+					// printf("i is : %d and j is : %d, map_height %d, width : %lu\n", i, j, map_height, ft_strlen(map[i - 1]) - 1);
                     error_message("\033[0;31mMap Parsing Error: Space Should Be Surrounded By Walls");
+				}
 				if ((i > 0 && map[i - 1][j] == SPACE) || (i < map_height - 1 && map[i + 1][j] == SPACE))
 					error_message("\033[0;31mMap Parsing Error: Space Should Be Surrounded By Walls");
 				if ((map[i][j + 1] == SPACE) || (j > 0 && map[i][j - 1] == SPACE))
