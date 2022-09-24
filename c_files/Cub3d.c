@@ -53,12 +53,12 @@ void render_map(t_player *p)
 		x = 0;
 		while (p->data->map[y][x])
 		{
-			if(p->data->map[y][x] == '1')
+			if(p->data->map[y][x] == '1' || p->data->map[y][x] == ' ')
 				ft_draw_elem(x, y, p, 0x00FF00);
 			else if (p->data->map[y][x] == ' ')
 			{
 				x++;
-				continue;
+				continue; 
 			}
 			else
 				ft_draw_elem(x, y, p, 0x0000FF);
@@ -88,6 +88,7 @@ void change_player_status(t_player *player)
 	float moveb;
 	float a = player->x + cos(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
 	float b = player->y + sin(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
+	printf("%d and %d and %c\n", (int) floor(b / 64), (int)floor(a / 64), player->data->map[(int) floor(b / 64)][(int)floor(a / 64)]);
 	if(!isWall(a, b, player))
 	{
 		player->x = a;
@@ -196,6 +197,7 @@ void cast_ray(t_player *player, float angle, int rayid)
 		float vert_tochecky = vert_WallHorzy;
 		if(isRayleft)
 			vert_tocheckx -= 1;
+		//printf("%d and %d\n", (int) floor(vert_tocheckx / 64), (int)floor(vert_tochecky / 64));
 		if(isWall(vert_tocheckx, vert_tochecky, player))
 		{
 			found_vert = TRUE;
@@ -382,6 +384,24 @@ int get_height(t_directions *path)
 		i++;
 	return (i);
 }
+
+int *get_fixes(t_directions *path, int height)
+{
+	int *fix;
+	int spaces;
+	int loop;
+
+	loop = 0;
+	fix = malloc(height * sizeof(int));
+	while (loop < height)
+	{
+		spaces = 0;
+		while (path->map[loop][spaces] == ' ')
+			spaces++;
+		fix[loop++] = spaces;
+	}
+	return fix;
+}
 void start_game(t_directions *path)
 {
 	t_ray *rays;
@@ -392,6 +412,7 @@ void start_game(t_directions *path)
 
 	width = get_width(path);
 	height = get_height(path);
+	player.fixes = get_fixes(path, height);
 	player.x = (path->PLAYER_X + 0.5) * TILE_SIZE;
 	player.y = (path->PLAYER_Y + 0.5) * TILE_SIZE;
 	player.height = height;
@@ -399,8 +420,8 @@ void start_game(t_directions *path)
 	player.turnDirection = 0;
 	player.walkDirection = 0;
 	player.rotationAngle = get_init_pos(path);
-	player.walkSpeed = 0.35 * TILE_SIZE;
-	player.turnSpeed = 15 * (M_PI / 180);
+	player.walkSpeed = 0.30 * TILE_SIZE;
+	player.turnSpeed = 10 * (M_PI / 180);
 	data.mlx = mlx_init();
 	data.win = mlx_new_window(data.mlx, 1800, 1200, "Cub3d");
 	player.ray = malloc(1800 * sizeof(t_ray));
