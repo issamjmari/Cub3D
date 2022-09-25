@@ -70,7 +70,7 @@ void render_map(t_player *p)
 
 int isWall(float a, float b, t_player *player)
 {
-	if(a < 0 || a > 1800 || b < 0 || b > 1200)
+	if(a < 0 || a > player->width * TILE_SIZE || b < 0 || b > player->height * TILE_SIZE)
 		return 1;
 	int wallcheckx = floor(a / 64);
 	int wallchecky = floor(b / 64);
@@ -88,7 +88,7 @@ void change_player_status(t_player *player)
 	float moveb;
 	float a = player->x + cos(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
 	float b = player->y + sin(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
-	printf("%d and %d and %c\n", (int) floor(b / 64), (int)floor(a / 64), player->data->map[(int) floor(b / 64)][(int)floor(a / 64)]);
+	//printf("%d and %d and %c\n", (int) floor(b / 64), (int)floor(a / 64), player->data->map[(int) floor(b / 64)][(int)floor(a / 64)]);
 	if(!isWall(a, b, player))
 	{
 		player->x = a;
@@ -153,7 +153,7 @@ void cast_ray(t_player *player, float angle, int rayid)
 	float WallHorzy = horz_y_intercept;
 	float horz_Wallhitx = 0;
 	float horz_Wallhity = 0;
-	while (WallHorzx >= 0 && WallHorzx <= 1800 && WallHorzy >= 0 && WallHorzy <= 1200)
+	while (WallHorzx >= 0 && WallHorzx <= player->width * TILE_SIZE && WallHorzy >= 0 && WallHorzy <= player->height * TILE_SIZE)
 	{
 		float horz_tocheckx = WallHorzx;
 		float horz_tochecky = WallHorzy;
@@ -191,7 +191,7 @@ void cast_ray(t_player *player, float angle, int rayid)
 	float vert_WallHorzy = vert_y_intercept;
 	float vert_Wallhitx = 0;
 	float vert_Wallhity = 0;
-	while (vert_WallHorzx >= 0 && vert_WallHorzx <= 1800 && vert_WallHorzy >= 0 && vert_WallHorzy <= 1200)
+	while (vert_WallHorzx >= 0 && vert_WallHorzx <= player->width * TILE_SIZE && vert_WallHorzy >= 0 && vert_WallHorzy <= player->height * TILE_SIZE)
 	{
 		float vert_tocheckx = vert_WallHorzx;
 		float vert_tochecky = vert_WallHorzy;
