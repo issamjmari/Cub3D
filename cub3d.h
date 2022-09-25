@@ -130,6 +130,7 @@ typedef struct s_player
 	t_img	i;
 	t_data img;
 	t_directions *data;
+	t_data d_dimage;
 	t_ray  *ray;
 	int *fixes;
 }	t_player;
