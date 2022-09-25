@@ -120,6 +120,7 @@ typedef struct s_player
 	int turnDirection;
 	int walkDirection;
 	int moveDirection;
+	int	tab_press;
 	float rotationAngle;
 	float walkSpeed;
 	float turnSpeed;

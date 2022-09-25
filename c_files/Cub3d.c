@@ -53,7 +53,7 @@ void render_map(t_player *p)
 		x = 0;
 		while (p->data->map[y][x])
 		{
-			if(p->data->map[y][x] == '1' || p->data->map[y][x] == ' ')
+			if(p->data->map[y][x] == '1')
 				ft_draw_elem(x, y, p, 0x00FF00);
 			else if (p->data->map[y][x] == ' ')
 			{
@@ -88,7 +88,6 @@ void change_player_status(t_player *player)
 	float moveb;
 	float a = player->x + cos(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
 	float b = player->y + sin(player->rotationAngle) * (player->walkDirection * player->walkSpeed);
-	//printf("%d and %d and %c\n", (int) floor(b / 64), (int)floor(a / 64), player->data->map[(int) floor(b / 64)][(int)floor(a / 64)]);
 	if(!isWall(a, b, player))
 	{
 		player->x = a;
@@ -197,7 +196,6 @@ void cast_ray(t_player *player, float angle, int rayid)
 		float vert_tochecky = vert_WallHorzy;
 		if(isRayleft)
 			vert_tocheckx -= 1;
-		//printf("%d and %d\n", (int) floor(vert_tocheckx / 64), (int)floor(vert_tochecky / 64));
 		if(isWall(vert_tocheckx, vert_tochecky, player))
 		{
 			found_vert = TRUE;
@@ -271,7 +269,7 @@ void put_stripin3D(t_player *player, float project_height, int index)
 	if(put_y > 0)
 	{
 		while (ceil_y < put_y)
-			my_mlx_pixel_put(&player->img, index, ceil_y++, 0x25ABCDEF);
+			my_mlx_pixel_put(&player->img, index, ceil_y++, player->data->CEILING_COLOR);
 		while (ceil_y < floor_y)
 		{
 			int Yoffset = ((Y_loop + ((project_height / 2) - (1200 / 2))) * ((float) (TILE_SIZE / project_height)));
@@ -281,7 +279,7 @@ void put_stripin3D(t_player *player, float project_height, int index)
 			Y_loop++;
 		}
 		while (floor_y < 1200)
-			my_mlx_pixel_put(&player->img, index, floor_y++, 0xDF3232);
+			my_mlx_pixel_put(&player->img, index, floor_y++, player->data->FLOOR_COLOR);
 	}
 	else
 	{
@@ -323,6 +321,16 @@ void render_minimap(t_player *player)
 
 int next_frame(int key, t_player *player)
 {
+	int check = 0;
+	if(key == 48 && player->tab_press == 0)
+	{
+		player->tab_press = 1;
+		check = 1;
+	}
+	if(key == 48 && player->tab_press == 1 && check == 0)
+	{
+		player->tab_press = 0;
+	}
 	if (key == 13 || key == 126)
 		player->walkDirection = 1;
 	if (key == 0)
@@ -339,7 +347,8 @@ int next_frame(int key, t_player *player)
 	change_player_status(player);
 	get_rays(player);
 	render_3D(player);
-	render_minimap(player);
+	if(player->tab_press == 1)
+		render_minimap(player);
 	mlx_put_image_to_window(player->i.mlx, player->i.win, player->img.img, 0, 0);
 	player->walkDirection = 0;
 	player->turnDirection = 0;
@@ -354,11 +363,11 @@ int stop()
 float get_init_pos(t_directions *path)
 {
 	if(path->START_POSITION == 'N')
-		return (M_PI / 2);
+		return ((3 * M_PI) / 2);
 	if(path->START_POSITION == 'W')
 		return (M_PI);
 	if(path->START_POSITION == 'S')
-		return ((3 * M_PI) / 2);
+		return ((M_PI / 2));
 	if(path->START_POSITION == 'E')
 		return (0);
 	return 0;
@@ -419,6 +428,7 @@ void start_game(t_directions *path)
 	player.width = width;
 	player.turnDirection = 0;
 	player.walkDirection = 0;
+	player.tab_press  = 0;
 	player.rotationAngle = get_init_pos(path);
 	player.walkSpeed = 0.30 * TILE_SIZE;
 	player.turnSpeed = 10 * (M_PI / 180);
@@ -435,7 +445,7 @@ void start_game(t_directions *path)
 	player.data = path;
 	get_rays(&player);
 	render_3D(&player);
-	render_minimap(&player);
+	// render_minimap(&player);
 	mlx_put_image_to_window(player.i.mlx, player.i.win, player.img.img, 0, 0);
 	mlx_hook(data.win, 2, 0, next_frame, &player);
 	mlx_hook(data.win, 3, 0, stop, NULL);
