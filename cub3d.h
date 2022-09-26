@@ -105,6 +105,7 @@ typedef struct s_ray
 	float Wallhitx;
 	float Wallhity;
 	int   was_hit_vertical;
+	int ray_content;
 	int isRay_left;
 	int isRay_right;
 	int isRay_down;
@@ -126,11 +127,13 @@ typedef struct s_player
 	float turnSpeed;
 	int pic_width;
 	int pic_height;
-	t_data picture;
+	t_data img1;
+	t_data img2;
+	t_data img3;
+	t_data img4;
 	t_img	i;
 	t_data img;
 	t_directions *data;
-	t_data d_dimage;
 	t_ray  *ray;
 	int *fixes;
 }	t_player;

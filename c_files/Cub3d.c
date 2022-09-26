@@ -9,19 +9,18 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-void	ft_draw_elem(int x, int y, t_data *data, int color)
+void	ft_draw_elem(int x, int y, t_player *player, int color)
 {
-	double mini_factor;
-	int end_y = ((y * 64) + 64) * mini_factor;
-	int end_x = ((x * 64) + 64) * mini_factor;
+	int end_y = ((y * 64) + 64) * MINIMAP_FACTOR  ;
+	int end_x = ((x * 64) + 64) * MINIMAP_FACTOR ;
 	int start_x;
-	int start_y = (y * 64)  * mini_factor;
+	int start_y = (y * 64)  * MINIMAP_FACTOR;
 	while (start_y < end_y)
 	{
-		start_x = (x * 64) * mini_factor ;
+		start_x = (x * 64) * MINIMAP_FACTOR ;
 		while (start_x < end_x)
 		{
-			my_mlx_pixel_put(data, (start_x), (start_y), color);
+			my_mlx_pixel_put(&player->img, (start_x), (start_y), color);
 			start_x++;
 		}
 		start_y++;
@@ -38,7 +37,7 @@ void draw_line(t_player *player, float endX, float endY, int color)
 	double pixelY = player->y;
 	while (pixels)
 	{
-	    my_mlx_pixel_put(&player->img, ((pixelX + 10) * MINIMAP_FACTOR ), ((pixelY + 10) * MINIMAP_FACTOR ), color);
+	    my_mlx_pixel_put(&player->img, ((pixelX) * MINIMAP_FACTOR ), ((pixelY) * MINIMAP_FACTOR ), color);
 	    pixelX += deltaX;
 	    pixelY += deltaY;
 	    --pixels;
@@ -47,46 +46,26 @@ void draw_line(t_player *player, float endX, float endY, int color)
 
 void render_map(t_player *p)
 {
-	ft_draw_elem(200, 200, &p->d_dimage, 0xFFFFFF);
-	mlx_put_image_to_window(p->i.mlx, p->i.win, &p->d_dimage.img, 20, 20);
-	// int begy = floor((p->y - 200) / TILE_SIZE);
-	// int endy =  floor((p->y + 200) / TILE_SIZE);
-	// int endx = floor((p->x +  200) / TILE_SIZE);
-	// int img_x;
-	// int img_y = 0;
-
-	// if(begy < 0)
-	// 	begy = 0;
-	// if(endy > p->height * TILE_SIZE)
-	// 	endy = p->height * TILE_SIZE;
-	// while(begy < endy)
-	// {
-	// 	int begx = floor((p->x - 200) / TILE_SIZE);
-	// 	if(begx < 0)
-	// 		begx = 0;
-	// 	if(endx > p->width * TILE_SIZE)
-	// 		endx = p->width * TILE_SIZE;
-	// 	img_x = 0;
-	// 	while(begx < endx)
-	// 	{
-	// 		if(p->data->map[begy][begx] == '1')
-	// 			ft_draw_elem(img_x, img_y, &p->d_dimage, 0xFFFFFF);
-	// 		else if(p->data->map[begy][begx] == ' ')
-	// 			ft_draw_elem(img_x, img_y, &p->d_dimage, 0x15111111);
-	// 		else if(p->data->map[begy][begx] == 'N'
-	// 		|| p->data->map[begy][begx] == 'S'
-	// 		|| p->data->map[begy][begx] == 'W'
-	// 		|| p->data->map[begy][begx] == 'E')
-	// 			ft_draw_elem(img_x, img_y, &p->d_dimage, 0x0000FF);
-	// 		else
-	// 			ft_draw_elem(img_x, img_y, &p->d_dimage, 0xFFFFFF);
-	// 		begx++;
-	// 		img_x++;
-	// 	}
-	// 	printf("\n");
-	// 	begy++;
-	// 	img_y++;
-	// }
+	int y = 0;
+	int x;
+	while (p->data->map[y])
+	{
+		x = 0;
+		while (p->data->map[y][x])
+		{
+			if(p->data->map[y][x] == '1')
+				ft_draw_elem(x, y, p, 0x00FF00);
+			else if (p->data->map[y][x] == ' ')
+			{
+				x++;
+				continue; 
+			}
+			else
+				ft_draw_elem(x, y, p, 0x0000FF);
+			x++;
+		}
+		y++;
+	}
 }
 
 int isWall(float a, float b, t_player *player)
@@ -260,11 +239,11 @@ void get_rays(t_player *player)
 	}
 }
 
-int get_color(int y, int x, t_player *player)
+int get_color(int y, int x, t_data *img)
 {
 	char *dst;
 
-	dst = player->picture.addr + (y * player->picture.line_length + x * (player->picture.bits_per_pixel / 8));
+	dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
 	return (*(unsigned int *) dst);
 }
 
@@ -296,7 +275,7 @@ void put_stripin3D(t_player *player, float project_height, int index)
 			int Yoffset = ((Y_loop + ((project_height / 2) - (1200 / 2))) * ((float) (TILE_SIZE / project_height)));
 			if(Yoffset > 63 || Xoffset > 63 || Xoffset < 0 || Yoffset < 0)
 				break ;
-			my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, player));
+			my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img1));
 			Y_loop++;
 		}
 		while (floor_y < 1200)
@@ -310,7 +289,7 @@ void put_stripin3D(t_player *player, float project_height, int index)
 			int Yoffset = (Y_loop + ((project_height / 2) - (1200 / 2))) * ((float) (TILE_SIZE / project_height));
 			if(Yoffset > 63 || Xoffset > 63 || Xoffset < 0 || Yoffset < 0)
 				break ;
-			my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, player));
+			my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img1));
 			Y_loop++;
 		}
 	}
@@ -329,27 +308,8 @@ void render_3D(t_player *player)
 	}
 }
 
-void render_minimap(t_player *player)
-{
-	int i = 0;
-	render_map(player);
-	// while (i < 1800)
-	// {
-	// 	draw_line(player, player->ray[i].Wallhitx, player->ray[i].Wallhity, 0xCFCDFF);
-	// 	i++;
-	// }
-}
-
 int next_frame(int key, t_player *player)
 {
-	int check = 0;
-	if(key == 48 && player->tab_press == 0)
-	{
-		player->tab_press = 1;
-		check = 1;
-	}
-	if(key == 48 && player->tab_press == 1 && check == 0)
-		player->tab_press = 0;
 	if (key == 13 || key == 126)
 		player->walkDirection = 1;
 	if (key == 0)
@@ -366,8 +326,6 @@ int next_frame(int key, t_player *player)
 	change_player_status(player);
 	get_rays(player);
 	render_3D(player);
-	if(player->tab_press == 1)
-		render_minimap(player);
 	mlx_put_image_to_window(player->i.mlx, player->i.win, player->img.img, 0, 0);
 	player->walkDirection = 0;
 	player->turnDirection = 0;
@@ -458,18 +416,23 @@ void start_game(t_directions *path)
 	player.img.img = mlx_new_image(data.mlx, 1800, 1200);
 	player.img.addr = mlx_get_data_addr(player.img.img, &player.img.bits_per_pixel, &player.img.line_length,
     	&player.img.endian);
-	player.picture.img = mlx_xpm_file_to_image(data.mlx, "pi.xpm", &player.pic_width,&player.pic_height);
-	player.picture.addr = mlx_get_data_addr(player.picture.img, &player.picture.bits_per_pixel, &player.picture.line_length,
-    	&player.picture.endian);
-	player.d_dimage.img = mlx_new_image(data.mlx, 400, 400);
-	player.d_dimage.addr = mlx_get_data_addr(player.d_dimage.img, &player.d_dimage.bits_per_pixel, &player.d_dimage.line_length,
-    	&player.d_dimage.endian);
+	player.img1.img = mlx_xpm_file_to_image(data.mlx, "image1.xpm", &player.pic_width,&player.pic_height);
+	player.img1.addr = mlx_get_data_addr(player.img1.img, &player.img1.bits_per_pixel, &player.img1.line_length,
+    	&player.img1.endian);
+	player.img2.img = mlx_xpm_file_to_image(data.mlx, "image2.xpm", &player.pic_width,&player.pic_height);
+	player.img2.addr = mlx_get_data_addr(player.img2.img, &player.img2.bits_per_pixel, &player.img2.line_length,
+		 &player.img2.endian);
+	player.img3.img = mlx_xpm_file_to_image(data.mlx, "image3.xpm", &player.pic_width,&player.pic_height);
+	player.img3.addr = mlx_get_data_addr(player.img3.img, &player.img3.bits_per_pixel, &player.img3.line_length,
+    	&player.img3.endian);
+	player.img4.img = mlx_xpm_file_to_image(data.mlx, "image4.xpm", &player.pic_width,&player.pic_height);
+	player.img4.addr = mlx_get_data_addr(player.img4.img, &player.img4.bits_per_pixel, &player.img4.line_length,
+    	&player.img4.endian);
 	player.data = path;
-	// get_rays(&player);
-	render_minimap(&player);
-	// render_3D(&player);
+	get_rays(&player);
+	render_3D(&player);
 	mlx_put_image_to_window(player.i.mlx, player.i.win, player.img.img, 0, 0);
-	// mlx_hook(data.win, 2, 0, next_frame, &player);
-	// mlx_hook(data.win, 3, 0, stop, NULL);
+	mlx_hook(data.win, 2, 0, next_frame, &player);
+	mlx_hook(data.win, 3, 0, stop, NULL);
 	mlx_loop(data.mlx);
 }
