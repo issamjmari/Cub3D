@@ -116,6 +116,7 @@ typedef struct s_player
 {
 	float		x;
 	float		y;
+	int *width_for_each;
 	int height;
 	int width;
 	int turnDirection;
@@ -131,6 +132,7 @@ typedef struct s_player
 	t_data img2;
 	t_data img3;
 	t_data img4;
+	t_data img5;
 	t_img	i;
 	t_data img;
 	t_directions *data;

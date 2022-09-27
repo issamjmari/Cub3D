@@ -74,7 +74,8 @@ int isWall(float a, float b, t_player *player)
 		return 1;
 	int wallcheckx = floor(a / 64);
 	int wallchecky = floor(b / 64);
-	if(wallchecky >= player->height || wallcheckx >= player->width)
+	if(wallchecky >= player->height || wallcheckx >= player->width_for_each[wallchecky]
+	|| wallchecky < 0 || wallcheckx < 0)
 		return (1);
 	return (player->data->map[wallchecky][wallcheckx] == '1');
 }
@@ -122,6 +123,14 @@ float distance)
 	ray[rayid].isRay_up = isRayup;
 	ray[rayid].isRay_left = isRayleft;
 	ray[rayid].isRay_right = isRayright;
+	if(ray[rayid].isRay_up && !was_vertical)
+		ray[rayid].ray_content = 2;
+	else if(ray[rayid].isRay_down && !was_vertical)
+		ray[rayid].ray_content = 3;
+	else if(ray[rayid].isRay_right && was_vertical)
+		ray[rayid].ray_content = 4;
+	else
+		ray[rayid].ray_content = -1;
 }
 void cast_ray(t_player *player, float angle, int rayid)
 {
@@ -247,7 +256,7 @@ int get_color(int y, int x, t_data *img)
 	return (*(unsigned int *) dst);
 }
 
-void put_stripin3D(t_player *player, float project_height, int index)
+void put_stripin3D(t_player *player, float project_height, int index, int fd)
 {
 	int put_y;
 	int y;
@@ -275,7 +284,16 @@ void put_stripin3D(t_player *player, float project_height, int index)
 			int Yoffset = ((Y_loop + ((project_height / 2) - (1200 / 2))) * ((float) (TILE_SIZE / project_height)));
 			if(Yoffset > 63 || Xoffset > 63 || Xoffset < 0 || Yoffset < 0)
 				break ;
-			my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img1));
+			if(player->ray[index].ray_content == 1)
+				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img1));
+			else if(player->ray[index].ray_content == 2)
+				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img2));
+			else if(player->ray[index].ray_content == 3)
+				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img3));
+			else if(player->ray[index].ray_content == 4)
+				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img4));
+			else
+				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img1));
 			Y_loop++;
 		}
 		while (floor_y < 1200)
@@ -289,7 +307,16 @@ void put_stripin3D(t_player *player, float project_height, int index)
 			int Yoffset = (Y_loop + ((project_height / 2) - (1200 / 2))) * ((float) (TILE_SIZE / project_height));
 			if(Yoffset > 63 || Xoffset > 63 || Xoffset < 0 || Yoffset < 0)
 				break ;
-			my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img1));
+			if(player->ray[index].ray_content == 1)
+				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img1));
+			else if(player->ray[index].ray_content == 2)
+				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img2));
+			else if(player->ray[index].ray_content == 3)
+				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img3));
+			else if(player->ray[index].ray_content == 4)
+				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img4));
+			else
+				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img1));
 			Y_loop++;
 		}
 	}
@@ -300,10 +327,11 @@ void render_3D(t_player *player)
 	float distance_toprojection;
 	float projection_wall_height;
 	distance_toprojection = 1200 / tan((FOV / 2));
+	int fd = open("p.c", O_RDWR);
 	while (i < 1800)
 	{
 		projection_wall_height = (TILE_SIZE / (player->ray[i].distance * cos(player->ray[i].ray_angle - player->rotationAngle))) * distance_toprojection;
-		put_stripin3D(player, projection_wall_height, i);
+		put_stripin3D(player, projection_wall_height, i, fd);
 		i++;
 	}
 }
@@ -388,6 +416,23 @@ int *get_fixes(t_directions *path, int height)
 	}
 	return fix;
 }
+
+int *get_widths(t_directions *path, int height)
+{
+	int len;
+	int *wid_arr;
+
+	wid_arr = malloc(sizeof(int) * height);
+	len = 0;
+	while (len < height)
+	{
+		int width = 0;
+		while (path->map[len][width])
+			width++;
+		wid_arr[len++] = width;
+	}
+	return (wid_arr);
+}
 void start_game(t_directions *path)
 {
 	t_ray *rays;
@@ -403,6 +448,7 @@ void start_game(t_directions *path)
 	player.y = (path->PLAYER_Y + 0.5) * TILE_SIZE;
 	player.height = height;
 	player.width = width;
+	player.width_for_each = get_widths(path, height);
 	player.turnDirection = 0;
 	player.walkDirection = 0;
 	player.tab_press  = 0;
@@ -425,7 +471,7 @@ void start_game(t_directions *path)
 	player.img3.img = mlx_xpm_file_to_image(data.mlx, "image3.xpm", &player.pic_width,&player.pic_height);
 	player.img3.addr = mlx_get_data_addr(player.img3.img, &player.img3.bits_per_pixel, &player.img3.line_length,
     	&player.img3.endian);
-	player.img4.img = mlx_xpm_file_to_image(data.mlx, "image4.xpm", &player.pic_width,&player.pic_height);
+	player.img4.img = mlx_xpm_file_to_image(data.mlx, "image5.xpm", &player.pic_width,&player.pic_height);
 	player.img4.addr = mlx_get_data_addr(player.img4.img, &player.img4.bits_per_pixel, &player.img4.line_length,
     	&player.img4.endian);
 	player.data = path;
