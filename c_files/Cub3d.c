@@ -124,13 +124,13 @@ float distance)
 	ray[rayid].isRay_left = isRayleft;
 	ray[rayid].isRay_right = isRayright;
 	if(ray[rayid].isRay_up && !was_vertical)
-		ray[rayid].ray_content = 2;
+		ray[rayid].ray_content = 1;
 	else if(ray[rayid].isRay_down && !was_vertical)
-		ray[rayid].ray_content = 3;
+		ray[rayid].ray_content = 2;
 	else if(ray[rayid].isRay_right && was_vertical)
+		ray[rayid].ray_content = 3;
+	else if(ray[rayid].isRay_left && was_vertical)
 		ray[rayid].ray_content = 4;
-	else
-		ray[rayid].ray_content = -1;
 }
 void cast_ray(t_player *player, float angle, int rayid)
 {
@@ -292,8 +292,6 @@ void put_stripin3D(t_player *player, float project_height, int index, int fd)
 				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img3));
 			else if(player->ray[index].ray_content == 4)
 				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img4));
-			else
-				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img1));
 			Y_loop++;
 		}
 		while (floor_y < 1200)
@@ -315,8 +313,6 @@ void put_stripin3D(t_player *player, float project_height, int index, int fd)
 				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img3));
 			else if(player->ray[index].ray_content == 4)
 				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img4));
-			else
-				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img1));
 			Y_loop++;
 		}
 	}
@@ -360,7 +356,7 @@ int next_frame(int key, t_player *player)
 	player->moveDirection = 0;
 	return 0;
 }
-int stop()
+int stop(void)
 {
 	return 0;
 }
@@ -433,6 +429,7 @@ int *get_widths(t_directions *path, int height)
 	}
 	return (wid_arr);
 }
+
 void start_game(t_directions *path)
 {
 	t_ray *rays;
@@ -453,7 +450,7 @@ void start_game(t_directions *path)
 	player.walkDirection = 0;
 	player.tab_press  = 0;
 	player.rotationAngle = get_init_pos(path);
-	player.walkSpeed = 0.30 * TILE_SIZE;
+	player.walkSpeed = 0.60 * TILE_SIZE;
 	player.turnSpeed = 10 * (M_PI / 180);
 	data.mlx = mlx_init();
 	data.win = mlx_new_window(data.mlx, 1800, 1200, "Cub3d");
@@ -471,7 +468,7 @@ void start_game(t_directions *path)
 	player.img3.img = mlx_xpm_file_to_image(data.mlx, "image3.xpm", &player.pic_width,&player.pic_height);
 	player.img3.addr = mlx_get_data_addr(player.img3.img, &player.img3.bits_per_pixel, &player.img3.line_length,
     	&player.img3.endian);
-	player.img4.img = mlx_xpm_file_to_image(data.mlx, "image5.xpm", &player.pic_width,&player.pic_height);
+	player.img4.img = mlx_xpm_file_to_image(data.mlx, "image4.xpm", &player.pic_width,&player.pic_height);
 	player.img4.addr = mlx_get_data_addr(player.img4.img, &player.img4.bits_per_pixel, &player.img4.line_length,
     	&player.img4.endian);
 	player.data = path;
