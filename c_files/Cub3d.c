@@ -334,6 +334,12 @@ void render_3D(t_player *player)
 
 int next_frame(int key, t_player *player)
 {
+	if(key == 53)
+	{
+		free(player->ray);
+		free(player->width_for_each);
+		exit(1);
+	}
 	if (key == 13 || key == 126)
 		player->walkDirection = 1;
 	if (key == 0)
@@ -395,24 +401,6 @@ int get_height(t_directions *path)
 	return (i);
 }
 
-int *get_fixes(t_directions *path, int height)
-{
-	int *fix;
-	int spaces;
-	int loop;
-
-	loop = 0;
-	fix = malloc(height * sizeof(int));
-	while (loop < height)
-	{
-		spaces = 0;
-		while (path->map[loop][spaces] == ' ')
-			spaces++;
-		fix[loop++] = spaces;
-	}
-	return fix;
-}
-
 int *get_widths(t_directions *path, int height)
 {
 	int len;
@@ -429,7 +417,12 @@ int *get_widths(t_directions *path, int height)
 	}
 	return (wid_arr);
 }
-
+int close_win(t_player *player)
+{
+	free(player->width_for_each);
+	free(player->ray);
+	exit(1);
+}
 void start_game(t_directions *path)
 {
 	t_ray *rays;
@@ -440,7 +433,6 @@ void start_game(t_directions *path)
 
 	width = get_width(path);
 	height = get_height(path);
-	player.fixes = get_fixes(path, height);
 	player.x = (path->PLAYER_X + 0.5) * TILE_SIZE;
 	player.y = (path->PLAYER_Y + 0.5) * TILE_SIZE;
 	player.height = height;
@@ -459,16 +451,16 @@ void start_game(t_directions *path)
 	player.img.img = mlx_new_image(data.mlx, 1800, 1200);
 	player.img.addr = mlx_get_data_addr(player.img.img, &player.img.bits_per_pixel, &player.img.line_length,
     	&player.img.endian);
-	player.img1.img = mlx_xpm_file_to_image(data.mlx, "image1.xpm", &player.pic_width,&player.pic_height);
+	player.img1.img = mlx_xpm_file_to_image(data.mlx, "path_to_the_north_texture", &player.pic_width,&player.pic_height);
 	player.img1.addr = mlx_get_data_addr(player.img1.img, &player.img1.bits_per_pixel, &player.img1.line_length,
     	&player.img1.endian);
-	player.img2.img = mlx_xpm_file_to_image(data.mlx, "image2.xpm", &player.pic_width,&player.pic_height);
+	player.img2.img = mlx_xpm_file_to_image(data.mlx, "path_to_the_south_texture", &player.pic_width,&player.pic_height);
 	player.img2.addr = mlx_get_data_addr(player.img2.img, &player.img2.bits_per_pixel, &player.img2.line_length,
 		 &player.img2.endian);
-	player.img3.img = mlx_xpm_file_to_image(data.mlx, "image3.xpm", &player.pic_width,&player.pic_height);
+	player.img3.img = mlx_xpm_file_to_image(data.mlx, "path_to_the_west_texture", &player.pic_width,&player.pic_height);
 	player.img3.addr = mlx_get_data_addr(player.img3.img, &player.img3.bits_per_pixel, &player.img3.line_length,
     	&player.img3.endian);
-	player.img4.img = mlx_xpm_file_to_image(data.mlx, "image4.xpm", &player.pic_width,&player.pic_height);
+	player.img4.img = mlx_xpm_file_to_image(data.mlx, "path_to_the_east_texture", &player.pic_width,&player.pic_height);
 	player.img4.addr = mlx_get_data_addr(player.img4.img, &player.img4.bits_per_pixel, &player.img4.line_length,
     	&player.img4.endian);
 	player.data = path;
@@ -477,5 +469,6 @@ void start_game(t_directions *path)
 	mlx_put_image_to_window(player.i.mlx, player.i.win, player.img.img, 0, 0);
 	mlx_hook(data.win, 2, 0, next_frame, &player);
 	mlx_hook(data.win, 3, 0, stop, NULL);
+	mlx_hook(data.win, 17, (1L<<15) , close_win, &player);
 	mlx_loop(data.mlx);
 }
