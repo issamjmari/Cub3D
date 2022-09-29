@@ -133,7 +133,7 @@ typedef struct s_player
 	t_data img3;
 	t_data img4;
 	t_data img5;
-	t_img	i;
+	t_img	image;
 	t_data img;
 	t_directions *data;
 	t_ray  *ray;

@@ -142,13 +142,13 @@ void render_minimap(t_player *player)
 {
 	int i = 0;
 	render_map(player);
-	while (i < 1800)
+	while (i < 1500)
 	{
 		draw_line(player, player->ray[i].Wallhitx, player->ray[i].Wallhity, 0xCFCDFF);
 		i++;
 	}
 }
-void cast_ray(t_player *player, float angle, int rayid, int fd)
+void cast_ray(t_player *player, float angle, int rayid)
 {
 	float distance_check1;
 	float distance_check2;
@@ -255,12 +255,11 @@ isRayUp, isRayDown, rayid, distance_check2);
 void get_rays(t_player *player)
 {
 	int rayid = 0;
-	float projec = (1200 / tan((FOV / 2)));
-	int fd = open("k.c", O_RDWR | O_CREAT);
-	while (rayid < 1800)
+	float projec = (900 / tan((FOV / 2)));
+	while (rayid < 1500)
 	{
-		float angle2 = player->rotationAngle + atan((rayid - (1800 / 2)) / projec);
-		cast_ray(player, angle2, rayid, fd);
+		float angle2 = player->rotationAngle + atan((rayid - (1500 / 2)) / projec);
+		cast_ray(player, angle2, rayid);
 		rayid++;
 	}
 }
@@ -273,7 +272,7 @@ unsigned int get_color(int y, int x, t_data *img)
 	return (*(unsigned int *) dst);
 }
 
-void put_stripin3D(t_player *player, float project_height, int index, int fd)
+void put_stripin3D(t_player *player, float project_height, int index)
 {
 	int put_y;
 	int y;
@@ -286,7 +285,7 @@ void put_stripin3D(t_player *player, float project_height, int index, int fd)
 		Xoffset = (int)(player->ray[index].Wallhity) % TILE_SIZE;
 	else
 		Xoffset = (int)(player->ray[index].Wallhitx) % TILE_SIZE;
-	put_y = (int) ((1200 / 2) - (project_height / 2));
+	put_y = (int) ((900 / 2) - (project_height / 2));
 	if(put_y < 0)
 		put_y = 0;
 	ceil_y = 0;
@@ -298,17 +297,11 @@ void put_stripin3D(t_player *player, float project_height, int index, int fd)
 			my_mlx_pixel_put(&player->img, index, ceil_y++, player->data->CEILING_COLOR);
 		while (ceil_y < floor_y)
 		{
-			int Yoffset = ((Y_loop + ((project_height / 2) - (1200 / 2))) * ((float) (TILE_SIZE / project_height)));
+			int Yoffset = ((Y_loop + ((project_height / 2) - (900 / 2))) * ((float) (TILE_SIZE / project_height)));
 			if(Yoffset < 0)
 				Yoffset = 0;
 			if(Yoffset > 63 || Xoffset > 63)
-			{
-				dprintf(fd, "ray id %d : distance %f : down %d : left %d : right %d : up %d : ray angle %f : ray cont %d : hitx %f : hity %f : vertical %d\n", index,player->ray[index].distance, player->ray[index].isRay_down, player->ray[index].isRay_left, player->ray[index].isRay_right,\
-				player->ray[index].isRay_up, player->ray[index].ray_angle, player->ray[index].ray_content, player->ray[index].Wallhitx, player->ray[index].Wallhity,\
-				player->ray[index].was_hit_vertical);
-				dprintf(fd, "Yoffsey %d and Xoffset %d\n", Yoffset, Xoffset);
 				break ;
-			}
 			if(player->ray[index].ray_content == 1)
 				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img1));
 			else if(player->ray[index].ray_content == 2)
@@ -319,25 +312,19 @@ void put_stripin3D(t_player *player, float project_height, int index, int fd)
 				my_mlx_pixel_put(&player->img, index, ceil_y++, get_color(Yoffset, Xoffset, &player->img4));
 			Y_loop++;
 		}
-		while (floor_y < 1200)
+		while (floor_y < 900)
 			my_mlx_pixel_put(&player->img, index, floor_y++, player->data->FLOOR_COLOR);
 	}
 	else
 	{
 		y = 0;
-		while (y < 1200)
+		while (y < 900)
 		{
-			int Yoffset = (Y_loop + ((project_height / 2) - (1200 / 2))) * ((float) (TILE_SIZE / project_height));
+			int Yoffset = (Y_loop + ((project_height / 2) - (900 / 2))) * ((float) (TILE_SIZE / project_height));
 			if(Yoffset < 0)
 				Yoffset = 0;
 			if(Yoffset > 63 || Xoffset > 63)
-			{
-				dprintf(fd, "ray id %d : distance %f : down %d : left %d : right %d : up %d : ray angle %f : ray cont %d : hitx %f : hity %f : vertical %d\n", index,player->ray[index].distance, player->ray[index].isRay_down, player->ray[index].isRay_left, player->ray[index].isRay_right,\
-				player->ray[index].isRay_up, player->ray[index].ray_angle, player->ray[index].ray_content, player->ray[index].Wallhitx, player->ray[index].Wallhity,\
-				player->ray[index].was_hit_vertical);
-				dprintf(fd, "Yoffsey %d and Xoffset %d\n", Yoffset, Xoffset);
 				break ;
-			}
 			if(player->ray[index].ray_content == 1)
 				my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, Xoffset, &player->img1));
 			else if(player->ray[index].ray_content == 2)
@@ -355,24 +342,17 @@ void render_3D(t_player *player)
 	int i = 0;
 	float distance_toprojection;
 	float projection_wall_height;
-	distance_toprojection = 1200 / tan((FOV / 2));
-	int fd = open("x.c", O_RDWR | O_CREAT);
-	while (i < 1800)
+	distance_toprojection = 900 / tan((FOV / 2));
+	while (i < 1500)
 	{
 		projection_wall_height = (TILE_SIZE / (player->ray[i].distance * cos(player->ray[i].ray_angle - player->rotationAngle))) * distance_toprojection;
-		put_stripin3D(player, projection_wall_height, i, fd);
+		put_stripin3D(player, projection_wall_height, i);
 		i++;
 	}
 }
 
-int next_frame(int key, t_player *player)
+void init_keys(t_player *player, int key)
 {
-	if(key == 53)
-	{
-		free(player->ray);
-		free(player->width_for_each);
-		exit(1);
-	}
 	if (key == 13 || key == 126)
 		player->walkDirection = 1;
 	if (key == 123)
@@ -385,15 +365,28 @@ int next_frame(int key, t_player *player)
 		player->walkDirection = -1;
 	if (key == 124)
 		player->turnDirection = 1;
-	mlx_clear_window(player->i.mlx, player->i.win);
-	change_player_status(player);
-	get_rays(player);
-	render_3D(player);
-	// render_minimap(player);
-	mlx_put_image_to_window(player->i.mlx, player->i.win, player->img.img, 0, 0);
+}
+void get_value_back(t_player *player)
+{
 	player->walkDirection = 0;
 	player->turnDirection = 0;
 	player->moveDirection = 0;
+}
+int next_frame(int key, t_player *player)
+{
+	if(key == 53)
+	{
+		free(player->ray);
+		free(player->width_for_each);
+		exit(1);
+	}
+	init_keys(player, key);
+	mlx_clear_window(player->image.mlx, player->image.win);
+	change_player_status(player);
+	get_rays(player);
+	render_3D(player);
+	mlx_put_image_to_window(player->image.mlx, player->image.win, player->img.img, 0, 0);
+	get_value_back(player);
 	return 0;
 }
 int stop(void)
@@ -457,53 +450,55 @@ int close_win(t_player *player)
 	free(player->ray);
 	exit(1);
 }
+
+void init_player(t_directions *path, t_player *player)
+{
+	player->x = (path->PLAYER_X + 0.5) * TILE_SIZE;
+	player->y = (path->PLAYER_Y + 0.5) * TILE_SIZE;
+	player->height = get_height(path);
+	player->width = get_width(path);
+	player->width_for_each = get_widths(path, player->height);
+	player->turnDirection = 0;
+	player->walkDirection = 0;
+	player->tab_press  = 0;
+	player->rotationAngle = get_init_pos(path);
+	player->walkSpeed = 0.60 * TILE_SIZE;
+	player->turnSpeed = 10 * (M_PI / 180);
+	player->image.mlx = mlx_init();
+	player->image.win = mlx_new_window(player->image.mlx, 1500, 900, "Cub3d");
+	player->data = path;
+	player->ray = malloc(1500 * sizeof(t_ray));
+}
+
+void	create_images(t_player *player)
+{
+	player->img.img = mlx_new_image(player->image.mlx, 1500, 900);
+	player->img.addr = mlx_get_data_addr(player->img.img, &player->img.bits_per_pixel, &player->img.line_length,
+    	&player->img.endian);
+	player->img1.img = mlx_xpm_file_to_image(player->image.mlx, "path_to_the_east_texture", &player->pic_width,&player->pic_height);
+	player->img1.addr = mlx_get_data_addr(player->img1.img, &player->img1.bits_per_pixel, &player->img1.line_length,
+    	&player->img1.endian);
+	player->img2.img = mlx_xpm_file_to_image(player->image.mlx, "path_to_the_north_texture", &player->pic_width,&player->pic_height);
+	player->img2.addr = mlx_get_data_addr(player->img2.img, &player->img2.bits_per_pixel, &player->img2.line_length,
+		 &player->img2.endian);
+	player->img3.img = mlx_xpm_file_to_image(player->image.mlx, "path_to_the_west_texture", &player->pic_width,&player->pic_height);
+	player->img3.addr = mlx_get_data_addr(player->img3.img, &player->img3.bits_per_pixel, &player->img3.line_length,
+    	&player->img3.endian);
+	player->img4.img = mlx_xpm_file_to_image(player->image.mlx, "path_to_the_south_texture", &player->pic_width,&player->pic_height);
+	player->img4.addr = mlx_get_data_addr(player->img4.img, &player->img4.bits_per_pixel, &player->img4.line_length,
+    	&player->img4.endian);
+}
 void start_game(t_directions *path)
 {
-	t_ray *rays;
-	t_img data;
 	t_player player;
-	int width;
-	int height;
 
-	width = get_width(path);
-	height = get_height(path);
-	player.x = (path->PLAYER_X + 0.5) * TILE_SIZE;
-	player.y = (path->PLAYER_Y + 0.5) * TILE_SIZE;
-	player.height = height;
-	player.width = width;
-	player.width_for_each = get_widths(path, height);
-	player.turnDirection = 0;
-	player.walkDirection = 0;
-	player.tab_press  = 0;
-	player.rotationAngle = get_init_pos(path);
-	player.walkSpeed = 0.60 * TILE_SIZE;
-	player.turnSpeed = 10 * (M_PI / 180);
-	data.mlx = mlx_init();
-	data.win = mlx_new_window(data.mlx, 1800, 1200, "Cub3d");
-	player.ray = malloc(1800 * sizeof(t_ray));
-	player.i = data;
-	player.img.img = mlx_new_image(data.mlx, 1800, 1200);
-	player.img.addr = mlx_get_data_addr(player.img.img, &player.img.bits_per_pixel, &player.img.line_length,
-    	&player.img.endian);
-	player.img1.img = mlx_xpm_file_to_image(data.mlx, "path_to_the_east_texture", &player.pic_width,&player.pic_height);
-	player.img1.addr = mlx_get_data_addr(player.img1.img, &player.img1.bits_per_pixel, &player.img1.line_length,
-    	&player.img1.endian);
-	player.img2.img = mlx_xpm_file_to_image(data.mlx, "path_to_the_north_texture", &player.pic_width,&player.pic_height);
-	player.img2.addr = mlx_get_data_addr(player.img2.img, &player.img2.bits_per_pixel, &player.img2.line_length,
-		 &player.img2.endian);
-	player.img3.img = mlx_xpm_file_to_image(data.mlx, "path_to_the_west_texture", &player.pic_width,&player.pic_height);
-	player.img3.addr = mlx_get_data_addr(player.img3.img, &player.img3.bits_per_pixel, &player.img3.line_length,
-    	&player.img3.endian);
-	player.img4.img = mlx_xpm_file_to_image(data.mlx, "path_to_the_south_texture", &player.pic_width,&player.pic_height);
-	player.img4.addr = mlx_get_data_addr(player.img4.img, &player.img4.bits_per_pixel, &player.img4.line_length,
-    	&player.img4.endian);
-	player.data = path;
+	init_player(path, &player);
+	create_images(&player);
 	get_rays(&player);
 	render_3D(&player);
-	// render_minimap(&player);
-	mlx_put_image_to_window(player.i.mlx, player.i.win, player.img.img, 0, 0);
-	mlx_hook(data.win, 2, 0, next_frame, &player);
-	mlx_hook(data.win, 3, 0, stop, NULL);
-	mlx_hook(data.win, 17, (1L<<15) , close_win, &player);
-	mlx_loop(data.mlx);
+	mlx_put_image_to_window(player.image.mlx, player.image.win, player.img.img, 0, 0);
+	mlx_hook(player.image.win, 2, 0, next_frame, &player);
+	mlx_hook(player.image.win, 3, 0, stop, NULL);
+	mlx_hook(player.image.win, 17, (1L<<15) , close_win, &player);
+	mlx_loop(player.image.mlx);
 }
