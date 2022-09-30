@@ -86,19 +86,19 @@ float distance(t_player *p, float Wallx, float Wally)
 {
 	return (sqrt((Wallx - p->x) * (Wallx - p->x) + (Wally - p->y) * (Wally - p->y)));
 }
-void fill_data(t_ray *ray, float angle, float hitx, float hity,\
-int was_vertical, int isRayleft, int isRayright, int isRayup, int isRaydown, int rayid,\
-float distance)
+void fill_data(t_ray *ray, float angle, t_ray_steps data, int was_vertical)
 {
-	ray[rayid].distance = distance;
+	static int rayid;
+
+	ray[rayid].distance = data.distance;
 	ray[rayid].ray_angle = angle;
-	ray[rayid].Wallhitx = hitx;
-	ray[rayid].Wallhity = hity;
+	ray[rayid].Wallhitx = data.Wall_x;
+	ray[rayid].Wallhity = data.Wall_y;
 	ray[rayid].was_hit_vertical = was_vertical;
-	ray[rayid].isRay_down = isRaydown;
-	ray[rayid].isRay_up = isRayup;
-	ray[rayid].isRay_left = isRayleft;
-	ray[rayid].isRay_right = isRayright;
+	ray[rayid].isRay_down = data.ray_down;
+	ray[rayid].isRay_up = data.ray_up;
+	ray[rayid].isRay_left = data.ray_left;
+	ray[rayid].isRay_right = data.ray_right;
 	if(ray[rayid].isRay_up && !was_vertical)
 		ray[rayid].ray_content = 1;
 	else if(ray[rayid].isRay_down && !was_vertical)
@@ -107,6 +107,9 @@ float distance)
 		ray[rayid].ray_content = 3;
 	else if(ray[rayid].isRay_left && was_vertical)
 		ray[rayid].ray_content = 4;
+	rayid++;
+	if(rayid == 1500)
+		rayid = 0;
 }
 
 void render_map(t_player *p)
@@ -148,109 +151,130 @@ void render_minimap(t_player *player)
 		i++;
 	}
 }
-void cast_ray(t_player *player, float angle, int rayid)
+
+t_ray_steps get_vert_steps(t_player *player, float angle)
 {
-	float distance_check1;
-	float distance_check2;
-	int found_horz = FALSE;
-	int found_vert = FALSE;
+	t_ray_steps vert_step;
 
 	angle = remainder(angle, 2 * M_PI);
 	if(angle < 0)
 		angle += 2 * M_PI;
-	int isRayDown = (angle > 0 && angle < M_PI);
-	int isRayUp = !isRayDown;
-	int isRayright = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
-	int isRayleft = !isRayright;
-	// // HORIZONTAL
-	float horz_y_intercept = floor(player->y / TILE_SIZE) * TILE_SIZE;
-	if(isRayDown)
-		horz_y_intercept += TILE_SIZE;
-	float horz_x_intercept = player->x + (horz_y_intercept - player->y) / tan(angle);
-	float horz_y_step = TILE_SIZE;
-	if(isRayUp)
-		horz_y_step *= -1;
-	float horz_x_step = TILE_SIZE / tan(angle);
-	if((isRayleft && horz_x_step > 0) || (isRayright && horz_x_step < 0))
-		horz_x_step *= -1;
-	float WallHorzx = horz_x_intercept;
-	float WallHorzy = horz_y_intercept;
-	float horz_Wallhitx = 0;
-	float horz_Wallhity = 0;
+	vert_step.ray_down = (angle > 0 && angle < M_PI);
+	vert_step.ray_up = !vert_step.ray_down;
+	vert_step.ray_right = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
+	vert_step.ray_left = !vert_step.ray_right;
+	vert_step.x_intercept = floor(player->x / TILE_SIZE) * TILE_SIZE;
+	if(vert_step.ray_right)
+		vert_step.x_intercept += TILE_SIZE;
+	vert_step.y_intercept = player->y + ((vert_step.x_intercept - player->x) * tan(angle));
+	vert_step.xstep = TILE_SIZE;
+	if(vert_step.ray_left)
+		vert_step.xstep *= -1;
+	vert_step.ystep = TILE_SIZE * tan(angle);
+	if((vert_step.ray_up && vert_step.ystep > 0) || (vert_step.ray_down && vert_step.ystep < 0))
+		vert_step.ystep *= -1;
+	return (vert_step);
+}
+t_ray_steps get_horz_steps(t_player *player, float angle)
+{
+	t_ray_steps horz_step;
+
+	angle = remainder(angle, 2 * M_PI);
+	if(angle < 0)
+		angle += 2 * M_PI;
+	horz_step.ray_down = (angle > 0 && angle < M_PI);
+	horz_step.ray_up = !horz_step.ray_down;
+	horz_step.ray_right = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
+	horz_step.ray_left = !horz_step.ray_right;
+	horz_step.y_intercept = floor(player->y / TILE_SIZE) * TILE_SIZE;
+	if(horz_step.ray_down)
+		horz_step.y_intercept += TILE_SIZE;
+	horz_step.x_intercept = player->x + (horz_step.y_intercept - player->y) / tan(angle);
+	horz_step.ystep = TILE_SIZE;
+	if(horz_step.ray_up)
+		horz_step.ystep *= -1;
+	horz_step.xstep = TILE_SIZE / tan(angle);
+	if((horz_step.ray_left && horz_step.xstep > 0) || (horz_step.ray_right && horz_step.xstep < 0))
+		horz_step.xstep *= -1;
+	return (horz_step);
+}
+
+void	horz_distance(t_ray_steps *data, t_player *player, float angle)
+{
+	float WallHorzx;
+	float WallHorzy;
+	float horz_tochecky;
+
+	WallHorzx = data->x_intercept;
+	WallHorzy = data->y_intercept;
 	while (WallHorzx >= 0 && WallHorzx <= player->width * TILE_SIZE && WallHorzy >= 0 && WallHorzy <= player->height * TILE_SIZE)
 	{
-		float horz_tocheckx = WallHorzx;
-		float horz_tochecky = WallHorzy;
-		if(isRayUp)
+		horz_tochecky = WallHorzy;
+		if(data->ray_up)
 			horz_tochecky -= 1;
-		if(isWall(horz_tocheckx, horz_tochecky, player))
+		if(isWall(WallHorzx, horz_tochecky, player))
 		{
-			horz_Wallhitx = WallHorzx;
-			horz_Wallhity = WallHorzy;
-			found_horz = TRUE;
+			data->Wall_x = WallHorzx;
+			data->Wall_y = WallHorzy;
+			data->found_wall = TRUE;
 			break;
 		}
-		else
-		{
-			WallHorzx += horz_x_step;
-			WallHorzy += horz_y_step;
-		}
+		WallHorzx += data->xstep;
+		WallHorzy += data->ystep;
 	}
-	if(found_horz)
-		distance_check1 = distance(player, horz_Wallhitx, horz_Wallhity);
+	if(data->found_wall)
+		data->distance = distance(player, data->Wall_x, data->Wall_y);
 	else
-		distance_check1 = MAX_INT;
-	// VERTICAL
-	float vert_x_intercept = floor(player->x / TILE_SIZE) * TILE_SIZE;
-	if(isRayright)
-		vert_x_intercept += TILE_SIZE;
-	float vert_y_intercept = player->y + ((vert_x_intercept - player->x) * tan(angle));
-	float vert_x_step = TILE_SIZE;
-	if(isRayleft)
-		vert_x_step *= -1;
-	float vert_y_step = TILE_SIZE * tan(angle);
-	if((isRayUp && vert_y_step > 0) || (isRayDown && vert_y_step < 0))
-		vert_y_step *= -1;
-	float vert_WallHorzx = vert_x_intercept;
-	float vert_WallHorzy = vert_y_intercept;
-	float vert_Wallhitx = 0;
-	float vert_Wallhity = 0;
-	while (vert_WallHorzx >= 0 && vert_WallHorzx <= player->width * TILE_SIZE && vert_WallHorzy >= 0 && vert_WallHorzy <= player->height * TILE_SIZE)
+		data->distance = MAX_INT;
+}
+
+void vert_distance(t_ray_steps *data, t_player *player, float angle)
+{
+	float Wallvertx;
+	float Wallverty;
+	float vert_tocheckx;
+
+	Wallvertx = data->x_intercept;
+	Wallverty = data->y_intercept;
+	while (Wallvertx >= 0 && Wallvertx <= player->width * TILE_SIZE && Wallverty >= 0 && Wallverty <= player->height * TILE_SIZE)
 	{
-		float vert_tocheckx = vert_WallHorzx;
-		float vert_tochecky = vert_WallHorzy;
-		if(isRayleft)
+		vert_tocheckx = Wallvertx;
+		if(data->ray_left)
 			vert_tocheckx -= 1;
-		if(isWall(vert_tocheckx, vert_tochecky, player))
+		if(isWall(vert_tocheckx, Wallverty, player))
 		{
-			found_vert = TRUE;
-			if(vert_WallHorzx <= 1)
-				vert_Wallhitx = vert_WallHorzx - 64;
+			data->found_wall = TRUE;
+			if(Wallvertx <= 1)
+				data->Wall_x = Wallvertx - 64;
 			else
-				vert_Wallhitx = vert_WallHorzx;
-			vert_Wallhity = vert_WallHorzy;
+				data->Wall_x = Wallvertx;
+			data->Wall_y = Wallverty;
 			break;
 		}
-		else
-		{
-			vert_WallHorzx += vert_x_step;
-			vert_WallHorzy += vert_y_step;
-		}
+		Wallvertx += data->xstep;
+		Wallverty += data->ystep;
 	}
-	if(found_vert)
-		distance_check2 = distance(player, vert_Wallhitx, vert_Wallhity);
+	if(data->found_wall)
+		data->distance = distance(player, data->Wall_x, data->Wall_y);
 	else
-		distance_check2 = MAX_INT;
-	if(distance_check1 < distance_check2)
-	{
-		fill_data(player->ray, angle, horz_Wallhitx, horz_Wallhity, 0, isRayleft, isRayright,\
-isRayUp, isRayDown, rayid, distance_check1);
-	}
-	else if(distance_check2 < distance_check1)
-	{
-		fill_data(player->ray, angle, vert_Wallhitx, vert_Wallhity, 1, isRayleft, isRayright,\
-isRayUp, isRayDown, rayid, distance_check2);
-	}
+		data->distance = MAX_INT;
+}
+void cast_ray(t_player *player, float angle, int rayid)
+{
+	t_ray_steps horz_result;
+	t_ray_steps vert_result;
+
+	angle = remainder(angle, 2 * M_PI);
+	if(angle < 0)
+		angle += 2 * M_PI;
+	horz_result = get_horz_steps(player, angle);
+	vert_result = get_vert_steps(player, angle);
+	horz_distance(&horz_result, player, angle);
+	vert_distance(&vert_result, player, angle);
+	if(horz_result.distance < vert_result.distance)
+		fill_data(player->ray, angle, horz_result, 0);
+	else if(vert_result.distance < horz_result.distance)
+		fill_data(player->ray, angle, vert_result, 1);
 }
 void get_rays(t_player *player)
 {

@@ -139,3 +139,20 @@ typedef struct s_player
 	t_ray  *ray;
 	int *fixes;
 }	t_player;
+
+typedef struct s_ray_steps
+{
+	float x_intercept;
+	float y_intercept;
+	float xstep;
+	float ystep;
+	int   ray_down;
+	int   ray_up;
+	int   ray_left;
+	int   ray_right;
+	float distance;
+	float found_wall;
+	float Wall_x;
+	float Wall_y;
+	int vertical;
+}	t_ray_steps;
