@@ -28,13 +28,13 @@ void	ft_draw_elem(int x, int y, t_player *player, int color)
 }
 void draw_line(t_player *player, float endX, float endY, int color)
 {
-	double deltaX = (endX - player->x);
-	double deltaY = (endY - player->y);
+	float deltaX = (endX - player->x);
+	float deltaY = (endY - player->y);
 	int pixels = sqrt((deltaX * deltaX) + (deltaY * deltaY));
 	deltaX /= pixels;
 	deltaY /= pixels;
-	double pixelX = player->x;
-	double pixelY = player->y;
+	float pixelX = player->x;
+	float pixelY = player->y;
 	while (pixels)
 	{
 	    my_mlx_pixel_put(&player->img, ((pixelX) * MINIMAP_FACTOR ), ((pixelY) * MINIMAP_FACTOR ), color);
@@ -112,45 +112,6 @@ void fill_data(t_ray *ray, float angle, t_ray_steps data, int was_vertical)
 		rayid = 0;
 }
 
-void render_map(t_player *p)
-{
-	int y = 0;
-	int x;
-	while (p->data->map[y])
-	{
-		x = 0;
-		while (p->data->map[y][x])
-		{
-			if(p->data->map[y][x] == '1')
-				ft_draw_elem(x, y, p, 0x00FF00);
-			else if (p->data->map[y][x] == ' ')
-			{
-				x++;
-				continue;
-			}
-			else if(p->data->map[y][x] == 'N'
-			|| p->data->map[y][x] == 'S'
-			|| p->data->map[y][x] == 'W'
-			|| p->data->map[y][x] == 'E')
-				ft_draw_elem(x, y, p, 0x30FF0000);
-			else
-				ft_draw_elem(x, y, p, 0x0000FF);
-			x++;
-		}
-		y++;
-	}
-}
-
-void render_minimap(t_player *player)
-{
-	int i = 0;
-	render_map(player);
-	while (i < 1500)
-	{
-		draw_line(player, player->ray[i].Wallhitx, player->ray[i].Wallhity, 0xCFCDFF);
-		i++;
-	}
-}
 
 t_ray_steps get_vert_steps(t_player *player, float angle)
 {
@@ -288,6 +249,42 @@ void get_rays(t_player *player)
 	}
 }
 
+void render_map(t_player *p)
+{
+	int y = 0;
+	int x;
+	while (p->data->map[y])
+	{
+		x = 0;
+		while (p->data->map[y][x])
+		{
+			if(p->data->map[y][x] == '1')
+				ft_draw_elem(x, y, p, 0x00FF00);
+			else if (p->data->map[y][x] == ' ')
+			{
+				x++;
+				continue; 
+			}
+			else
+				ft_draw_elem(x, y, p, 0x0000FF);
+			x++;
+		}
+		y++;
+	}
+}
+
+void render_minimap(t_player *player)
+{
+	int i = 0;
+	render_map(player);
+	while (i < 1500)
+	{
+		draw_line(player, player->ray[i].Wallhitx, player->ray[i].Wallhity, 0xCFCDFF);
+		i++;
+	}
+}
+
+
 unsigned int get_color(int y, int x, t_data *img)
 {
 	char *dst;
@@ -363,9 +360,11 @@ void put_stripin3D(t_player *player, float project_height, int index)
 }
 void render_3D(t_player *player)
 {
-	int i = 0;
+	int i;
 	float distance_toprojection;
 	float projection_wall_height;
+
+	i = 0;
 	distance_toprojection = 900 / tan((FOV / 2));
 	while (i < 1500)
 	{
@@ -409,6 +408,7 @@ int next_frame(int key, t_player *player)
 	change_player_status(player);
 	get_rays(player);
 	render_3D(player);
+	render_minimap(player);
 	mlx_put_image_to_window(player->image.mlx, player->image.win, player->img.img, 0, 0);
 	get_value_back(player);
 	return 0;
@@ -520,6 +520,7 @@ void start_game(t_directions *path)
 	create_images(&player);
 	get_rays(&player);
 	render_3D(&player);
+	render_minimap(&player);
 	mlx_put_image_to_window(player.image.mlx, player.image.win, player.img.img, 0, 0);
 	mlx_hook(player.image.win, 2, 0, next_frame, &player);
 	mlx_hook(player.image.win, 3, 0, stop, NULL);
