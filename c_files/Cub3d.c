@@ -162,26 +162,22 @@ t_ray_steps get_horz_steps(t_player *player, float angle)
 
 void	horz_distance(t_ray_steps *data, t_player *player, float angle)
 {
-	float WallHorzx;
-	float WallHorzy;
 	float horz_tochecky;
 
-	WallHorzx = data->x_intercept;
-	WallHorzy = data->y_intercept;
-	while (WallHorzx >= 0 && WallHorzx <= player->width * TILE_SIZE && WallHorzy >= 0 && WallHorzy <= player->height * TILE_SIZE)
+	while (data->x_intercept >= 0 && data->x_intercept <= player->width * TILE_SIZE && data->y_intercept >= 0 && data->y_intercept <= player->height * TILE_SIZE)
 	{
-		horz_tochecky = WallHorzy;
+		horz_tochecky = data->y_intercept;
 		if(data->ray_up)
 			horz_tochecky -= 1;
-		if(isWall(WallHorzx, horz_tochecky, player))
+		if(isWall(data->x_intercept, horz_tochecky, player))
 		{
-			data->Wall_x = WallHorzx;
-			data->Wall_y = WallHorzy;
+			data->Wall_x = data->x_intercept;
+			data->Wall_y = data->y_intercept;
 			data->found_wall = TRUE;
 			break;
 		}
-		WallHorzx += data->xstep;
-		WallHorzy += data->ystep;
+		data->x_intercept += data->xstep;
+		data->y_intercept += data->ystep;
 	}
 	if(data->found_wall)
 		data->distance = distance(player, data->Wall_x, data->Wall_y);
@@ -191,29 +187,25 @@ void	horz_distance(t_ray_steps *data, t_player *player, float angle)
 
 void vert_distance(t_ray_steps *data, t_player *player, float angle)
 {
-	float Wallvertx;
-	float Wallverty;
 	float vert_tocheckx;
 
-	Wallvertx = data->x_intercept;
-	Wallverty = data->y_intercept;
-	while (Wallvertx >= 0 && Wallvertx <= player->width * TILE_SIZE && Wallverty >= 0 && Wallverty <= player->height * TILE_SIZE)
+	while (data->x_intercept >= 0 && data->x_intercept <= player->width * TILE_SIZE && data->y_intercept >= 0 && data->y_intercept <= player->height * TILE_SIZE)
 	{
-		vert_tocheckx = Wallvertx;
+		vert_tocheckx = data->x_intercept;
 		if(data->ray_left)
 			vert_tocheckx -= 1;
-		if(isWall(vert_tocheckx, Wallverty, player))
+		if(isWall(vert_tocheckx, data->y_intercept, player))
 		{
 			data->found_wall = TRUE;
-			if(Wallvertx <= 1)
-				data->Wall_x = Wallvertx - 64;
+			if(data->x_intercept <= 1)
+				data->Wall_x = data->x_intercept - 64;
 			else
-				data->Wall_x = Wallvertx;
-			data->Wall_y = Wallverty;
+				data->Wall_x = data->x_intercept;
+			data->Wall_y = data->y_intercept;
 			break;
 		}
-		Wallvertx += data->xstep;
-		Wallverty += data->ystep;
+		data->x_intercept += data->xstep;
+		data->y_intercept += data->ystep;
 	}
 	if(data->found_wall)
 		data->distance = distance(player, data->Wall_x, data->Wall_y);
@@ -293,8 +285,72 @@ unsigned int get_color(int y, int x, t_data *img)
 	return (*(unsigned int *) dst);
 }
 
+void handle_multiple3d(t_threed_handle *data, t_player *player, int index, int project_height)
+{
+	while (data->ceil_y < data->put_pos)
+		my_mlx_pixel_put(&player->img, index, data->ceil_y++, player->data->CEILING_COLOR);
+	while (data->ceil_y < data->floor_y)
+	{
+		int Yoffset = ((data->loop + ((project_height / 2) - (900 / 2))) * ((float) (TILE_SIZE / project_height)));
+		if(Yoffset < 0)
+			Yoffset = 0;
+		if(Yoffset > 63 || data->Xoffset > 63)
+			break ;
+		if(player->ray[index].ray_content == 1)
+			my_mlx_pixel_put(&player->img, index, data->ceil_y++, get_color(Yoffset, data->Xoffset, &player->img1));
+		else if(player->ray[index].ray_content == 2)
+			my_mlx_pixel_put(&player->img, index, data->ceil_y++, get_color(Yoffset, data->Xoffset, &player->img2));
+		else if(player->ray[index].ray_content == 3)
+			my_mlx_pixel_put(&player->img, index, data->ceil_y++, get_color(Yoffset, data->Xoffset, &player->img3));
+		else if(player->ray[index].ray_content == 4)
+			my_mlx_pixel_put(&player->img, index, data->ceil_y++, get_color(Yoffset, data->Xoffset, &player->img4));
+		data->loop++;
+	}
+	while (data->floor_y < 900)
+		my_mlx_pixel_put(&player->img, index, data->floor_y++, player->data->FLOOR_COLOR);
+}
+
+void	handle_single3d(t_threed_handle *data, t_player *player, int index, int project_height)
+{
+	int y;
+
+	y = 0;
+	while (y < 900)
+	{
+		int Yoffset = (data->loop + ((project_height / 2) - (900 / 2))) * ((float) (TILE_SIZE / project_height));
+		if(Yoffset < 0)
+			Yoffset = 0;
+		if(Yoffset > 63 || data->Xoffset > 63)
+			break ;
+		if(player->ray[index].ray_content == 1)
+			my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, data->Xoffset, &player->img1));
+		else if(player->ray[index].ray_content == 2)
+			my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, data->Xoffset, &player->img2));
+		else if(player->ray[index].ray_content == 3)
+			my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, data->Xoffset, &player->img3));
+		else if(player->ray[index].ray_content == 4)
+			my_mlx_pixel_put(&player->img, index, y++, get_color(Yoffset, data->Xoffset, &player->img4));
+		data->loop++;
+	}
+}
 void put_stripin3D(t_player *player, float project_height, int index)
 {
+	// t_threed_handle data;
+ 
+	// if(player->ray[index].was_hit_vertical)
+	// 	data.Xoffset = (int)(player->ray[index].Wallhity) % TILE_SIZE;
+	// else
+	// 	data.Xoffset = (int)(player->ray[index].Wallhitx) % TILE_SIZE;
+	// data.put_pos = (int) ((900 / 2) - (project_height / 2));
+	// if(data.put_pos < 0)
+	// 	data.put_pos = 0;
+	// data.ceil_y = 0;
+	// data.floor_y = data.put_pos + project_height;
+	// data.loop = data.put_pos;
+	// if(data.put_pos > 0)
+	// 	handle_multiple3d(&data, player, index, project_height);
+	// else
+	// 	handle_single3d(&data, player, index, project_height);
 	int put_y;
 	int y;
 	int ceil_y;
@@ -336,6 +392,25 @@ void put_stripin3D(t_player *player, float project_height, int index)
 		while (floor_y < 900)
 			my_mlx_pixel_put(&player->img, index, floor_y++, player->data->FLOOR_COLOR);
 	}
+	/*
+	while (data->ceil_y < data->floor_y)
+	{
+		int Yoffset = ((data->loop + ((project_height / 2) - (900 / 2))) * ((float) (TILE_SIZE / project_height)));
+		if(Yoffset < 0)
+			Yoffset = 0;
+		if(Yoffset > 63 || data->Xoffset > 63)
+			break ;
+		if(player->ray[index].ray_content == 1)
+			my_mlx_pixel_put(&player->img, index, data->ceil_y++, get_color(Yoffset, data->Xoffset, &player->img1));
+		else if(player->ray[index].ray_content == 2)
+			my_mlx_pixel_put(&player->img, index, data->ceil_y++, get_color(Yoffset, data->Xoffset, &player->img2));
+		else if(player->ray[index].ray_content == 3)
+			my_mlx_pixel_put(&player->img, index, data->ceil_y++, get_color(Yoffset, data->Xoffset, &player->img3));
+		else if(player->ray[index].ray_content == 4)
+			my_mlx_pixel_put(&player->img, index, data->ceil_y++, get_color(Yoffset, data->Xoffset, &player->img4));
+		data->loop++;
+	}
+	*/
 	else
 	{
 		y = 0;

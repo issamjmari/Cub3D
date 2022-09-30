@@ -156,3 +156,12 @@ typedef struct s_ray_steps
 	float Wall_y;
 	int vertical;
 }	t_ray_steps;
+
+typedef struct s_threed_handle
+{
+	int Xoffset;
+	int ceil_y;
+	int floor_y;
+	int loop;
+	int put_pos;
+} t_threed_handle;
