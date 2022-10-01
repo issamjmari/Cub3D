@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ael-hiou <ael-hiou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 14:26:26 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/09/09 11:59:33 by ael-hiou         ###   ########.fr       */
+/*   Updated: 2022/10/01 21:36:12 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,19 +68,6 @@ typedef struct getting_textures
 	char			**data;
 }					t_getting_textures;
 
-void	checking_rgb_format_utils(char *directions, t_checking_rgb *var);
-void	checking_rgb_format_init(t_checking_rgb *var);
-int		checking_rgb_format(char *directions);
-void	choosing_directions(char *direction, t_directions *path);
-void	ft_free(char **data);
-void	error_message(char *message);
-void	init(t_directions *path);
-void	is_surrounded_by_walls(char **map, int map_height);
-void	map_validation(t_directions *path);
-void	error_message(char *message);
-int		get_size(char **data);
-int		get_allocation_size(char *data);
-void	start_game(t_directions *path);
 typedef struct s_img
 {
 	char	*relative_path;
@@ -165,3 +152,52 @@ typedef struct s_threed_handle
 	int loop;
 	int put_pos;
 } t_threed_handle;
+
+void	checking_rgb_format_utils(char *directions, t_checking_rgb *var);
+void	checking_rgb_format_init(t_checking_rgb *var);
+int		checking_rgb_format(char *directions);
+void	choosing_directions(char *direction, t_directions *path);
+void	ft_free(char **data);
+void	error_message(char *message);
+void	init(t_directions *path);
+void	is_surrounded_by_walls(char **map, int map_height);
+void	map_validation(t_directions *path);
+void	error_message(char *message);
+int		get_size(char **data);
+int		get_allocation_size(char *data);
+void	start_game(t_directions *path);
+void	init_keys(t_player *player, int key);
+float	get_init_pos(t_directions *path);
+void	init_player(t_directions *path, t_player *player);
+void	get_value_back(t_player *player);
+void	set_player(float a, float b, t_player *player);
+void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
+void	ft_draw_elem(int x, int y, t_player *player, int color);
+void	draw_line(t_player *player, float endX, float endY, int color);
+unsigned int	get_color(int y, int x, t_data *img);
+void	put_image_strip(t_player *player, int index, \
+t_threed_handle *data, int yoffset);
+void	handle_multiple3d(t_threed_handle *data, t_player *player, \
+int index, float project_height);
+void	handle_single3d(t_threed_handle *data, t_player *player, \
+int index, float project_height);
+void	put_stripin3d(t_player *player, float project_height, int index);
+void	render_3d(t_player *player);
+int		get_width(t_directions *path);
+int		get_height(t_directions *path);
+int		*get_widths(t_directions *path, int height);
+void	create_images(t_player *player);
+int		close_win(t_player *player);
+int		stop(void);
+int		next_frame(int key, t_player *player);
+float	distance(t_player *p, float Wallx, float Wally);
+void	fill_data(t_ray *ray, float angle, t_ray_steps data, int was_vertical);
+t_ray_steps	get_vert_steps(t_player *player, float angle);
+t_ray_steps	get_horz_steps(t_player *player, float angle);
+void	set_distance(t_ray_steps *data, t_player *player);
+void	horz_distance(t_ray_steps *data, t_player *player);
+void	vert_distance(t_ray_steps *data, t_player *player);
+void	cast_ray(t_player *player, float angle);
+void	get_rays(t_player *player);
+int		iswall(float a, float b, t_player *player);
+void	change_player_status(t_player *player);
