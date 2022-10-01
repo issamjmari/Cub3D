@@ -201,6 +201,7 @@ void	horz_distance(t_ray_steps *data, t_player *player, float angle)
 {
 	float	horz_tochecky;
 
+	data->found_wall = FALSE;
 	while (data->x_intercept >= 0
 		&& data->x_intercept <= player->width * TILE_SIZE
 		&& data->y_intercept >= 0
@@ -226,6 +227,7 @@ void	vert_distance(t_ray_steps *data, t_player *player, float angle)
 {
 	float	vert_tocheckx;
 
+	data->found_wall = FALSE;
 	while (data->x_intercept >= 0
 		&& data->x_intercept <= player->width * TILE_SIZE
 		&& data->y_intercept >= 0
