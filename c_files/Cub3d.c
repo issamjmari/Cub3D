@@ -197,7 +197,7 @@ void	set_distance(t_ray_steps *data, t_player *player)
 		data->distance = MAX_INT;
 }
 
-void	horz_distance(t_ray_steps *data, t_player *player, float angle)
+void	horz_distance(t_ray_steps *data, t_player *player)
 {
 	float	horz_tochecky;
 
@@ -223,7 +223,7 @@ void	horz_distance(t_ray_steps *data, t_player *player, float angle)
 	set_distance(data, player);
 }
 
-void	vert_distance(t_ray_steps *data, t_player *player, float angle)
+void	vert_distance(t_ray_steps *data, t_player *player)
 {
 	float	vert_tocheckx;
 
@@ -252,7 +252,7 @@ void	vert_distance(t_ray_steps *data, t_player *player, float angle)
 	set_distance(data, player);
 }
 
-void	cast_ray(t_player *player, float angle, int rayid)
+void	cast_ray(t_player *player, float angle)
 {
 	t_ray_steps	horz_result;
 	t_ray_steps	vert_result;
@@ -262,8 +262,8 @@ void	cast_ray(t_player *player, float angle, int rayid)
 		angle += 2 * M_PI;
 	horz_result = get_horz_steps(player, angle);
 	vert_result = get_vert_steps(player, angle);
-	horz_distance(&horz_result, player, angle);
-	vert_distance(&vert_result, player, angle);
+	horz_distance(&horz_result, player);
+	vert_distance(&vert_result, player);
 	if (horz_result.distance < vert_result.distance)
 		fill_data(player->ray, angle, horz_result, 0);
 	else if (vert_result.distance < horz_result.distance)
@@ -281,7 +281,7 @@ void	get_rays(t_player *player)
 	while (rayid < 1500)
 	{
 		angle = player->rotationAngle + atan((rayid - (1500 / 2)) / projec);
-		cast_ray(player, angle, rayid);
+		cast_ray(player, angle);
 		rayid++;
 	}
 }

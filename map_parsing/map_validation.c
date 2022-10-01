@@ -108,10 +108,10 @@ void	is_surrounded_by_walls(char **map, int map_height)
 	}
 }
 
-void	correct_position_for_space(char **map, int map_height)
+void	correct_position_for_space(char **map, size_t map_height)
 {
-	int	i;
-	int	j;
+	size_t	i;
+	size_t	j;
 
 	i = 0;
 	while (map[i])
@@ -139,7 +139,7 @@ void	correct_position_for_space(char **map, int map_height)
 
 void	map_validation(t_directions *path)
 {
-	int	map_height;
+	size_t	map_height;
 
 	map_height = get_size(path->map);
 	is_surrounded_by_walls(path->map, map_height);

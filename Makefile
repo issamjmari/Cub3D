@@ -3,7 +3,7 @@ includes/get_next_line_utils.c library/ft_lstclear.c library/ft_isalpha.c librar
 library/ft_isalnum.c library/ft_isdigit.c library/ft_substr.c map_parsing/map_validation.c \
 library/ft_strtrim.c map_parsing/parsing_utils.c library/ft_strchr.c
 CC = cc
-CFLAGS =  -lmlx -framework OpenGL -framework AppKit -fsanitize=address -g
+CFLAGS =  -lmlx -framework OpenGL -framework AppKit -fsanitize=address -Wall -Wextra -Werror
 NAME = cub3d
 
 all : $(NAME)
