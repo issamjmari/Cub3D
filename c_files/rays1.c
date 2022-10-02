@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:30:33 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 14:27:57 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 15:28:45 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,7 @@ void	vert_distance(t_ray_steps *data, t_player *player)
 		if (iswall(vert_tocheckx, data->y_intercept, player))
 		{
 			data->found_wall = TRUE;
-			if (data->x_intercept <= 1)
-				data->Wall_x = data->x_intercept - 64;
-			else
-				data->Wall_x = data->x_intercept;
+			data->Wall_x = data->x_intercept;
 			data->Wall_y = data->y_intercept;
 			break ;
 		}
@@ -80,9 +77,6 @@ void	cast_ray(t_player *player, float angle)
 	t_ray_steps	horz_result;
 	t_ray_steps	vert_result;
 
-	angle = remainder(angle, 2 * M_PI);
-	if (angle < 0)
-		angle += 2 * M_PI;
 	horz_result = get_horz_steps(player, angle);
 	vert_result = get_vert_steps(player, angle);
 	horz_distance(&horz_result, player);

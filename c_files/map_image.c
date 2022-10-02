@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:25:30 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 13:06:05 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 15:17:34 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,22 +64,22 @@ void	create_images(t_player *player)
 	&player->img.bits_per_pixel, &player->img.line_length,
 			&player->img.endian);
 	player->img1.img = mlx_xpm_file_to_image(player->image.mlx, \
-	"path_to_the_east_texture", &player->pic_width, &player->pic_height);
+	player->data->NORTH, &player->pic_width, &player->pic_height);
 	player->img1.addr = mlx_get_data_addr(player->img1.img, \
 	&player->img1.bits_per_pixel, &player->img1.line_length,
 			&player->img1.endian);
 	player->img2.img = mlx_xpm_file_to_image(player->image.mlx, \
-	"path_to_the_north_texture", &player->pic_width, &player->pic_height);
+	player->data->SOUTH, &player->pic_width, &player->pic_height);
 	player->img2.addr = mlx_get_data_addr(player->img2.img, \
 	&player->img2.bits_per_pixel, &player->img2.line_length,
 			&player->img2.endian);
 	player->img3.img = mlx_xpm_file_to_image(player->image.mlx, \
-	"path_to_the_west_texture", &player->pic_width, &player->pic_height);
+	player->data->WEST, &player->pic_width, &player->pic_height);
 	player->img3.addr = mlx_get_data_addr(player->img3.img, \
 	&player->img3.bits_per_pixel, &player->img3.line_length,
 			&player->img3.endian);
 	player->img4.img = mlx_xpm_file_to_image(player->image.mlx, \
-	"path_to_the_south_texture", &player->pic_width, &player->pic_height);
+	player->data->EAST, &player->pic_width, &player->pic_height);
 	player->img4.addr = mlx_get_data_addr(player->img4.img, \
 	&player->img4.bits_per_pixel, &player->img4.line_length,
 			&player->img4.endian);
