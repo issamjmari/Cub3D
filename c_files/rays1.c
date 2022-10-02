@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:30:33 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 13:06:05 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 14:27:57 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	set_distance(t_ray_steps *data, t_player *player)
 	if (data->found_wall)
 		data->distance = distance(player, data->Wall_x, data->Wall_y);
 	else
-		data->distance = MAX_INT;
+		data->distance = 2147483647;
 }
 
 void	horz_distance(t_ray_steps *data, t_player *player)
@@ -26,9 +26,9 @@ void	horz_distance(t_ray_steps *data, t_player *player)
 
 	data->found_wall = FALSE;
 	while (data->x_intercept >= 0
-		&& data->x_intercept <= player->width * TILE_SIZE
+		&& data->x_intercept <= player->width * 64
 		&& data->y_intercept >= 0
-		&& data->y_intercept <= player->height * TILE_SIZE)
+		&& data->y_intercept <= player->height * 64)
 	{
 		horz_tochecky = data->y_intercept;
 		if (data->ray_up)
@@ -52,9 +52,9 @@ void	vert_distance(t_ray_steps *data, t_player *player)
 
 	data->found_wall = FALSE;
 	while (data->x_intercept >= 0
-		&& data->x_intercept <= player->width * TILE_SIZE
+		&& data->x_intercept <= player->width * 64
 		&& data->y_intercept >= 0
-		&& data->y_intercept <= player->height * TILE_SIZE)
+		&& data->y_intercept <= player->height * 64)
 	{
 		vert_tocheckx = data->x_intercept;
 		if (data->ray_left)
@@ -100,7 +100,7 @@ void	get_rays(t_player *player)
 	float	angle;
 
 	rayid = 0;
-	projec = (900 / tan((FOV / 2)));
+	projec = (750 / tan(((60 * (M_PI / 180)) / 2)));
 	while (rayid < 1500)
 	{
 		angle = player->rotationAngle + atan((rayid - (1500 / 2)) / projec);

@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:06:03 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 13:06:05 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 14:24:10 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ float	get_init_pos(t_directions *path)
 
 void	init_player(t_directions *path, t_player *player)
 {
-	player->x = (path->PLAYER_X + 0.5) * TILE_SIZE;
-	player->y = (path->PLAYER_Y + 0.5) * TILE_SIZE;
+	player->x = (path->PLAYER_X + 0.5) * 64;
+	player->y = (path->PLAYER_Y + 0.5) * 64;
 	player->height = get_height(path);
 	player->width = get_width(path);
 	player->width_for_each = get_widths(path, player->height);
@@ -52,7 +52,7 @@ void	init_player(t_directions *path, t_player *player)
 	player->walkDirection = 0;
 	player->tab_press = 0;
 	player->rotationAngle = get_init_pos(path);
-	player->walkSpeed = 0.60 * TILE_SIZE;
+	player->walkSpeed = 0.60 * 64;
 	player->turnSpeed = 10 * (M_PI / 180);
 	player->image.mlx = mlx_init();
 	player->image.win = mlx_new_window(player->image.mlx, 1500, 900, "Cub3d");

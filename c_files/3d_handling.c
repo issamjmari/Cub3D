@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:14:54 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 13:06:05 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 14:28:06 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int index, float project_height)
 	while (data->ceil_y < data->floor_y)
 	{
 		yoffset = ((data->loop++ + ((project_height / 2) - (900 / 2))) * \
-	((float)(TILE_SIZE / project_height)));
+	((float)(64 / project_height)));
 		if (yoffset < 0)
 			yoffset = 0;
 		if (yoffset > 63 || data->Xoffset > 63)
@@ -45,7 +45,7 @@ int index, float project_height)
 	while (y < 900)
 	{
 		yoffset = (data->loop++ + ((project_height / 2) - (900 / 2))) \
-	* ((float)(TILE_SIZE / project_height));
+	* ((float)(64 / project_height));
 		if (yoffset < 0)
 			yoffset = 0;
 		if (yoffset > 63 || data->Xoffset > 63)
@@ -70,9 +70,9 @@ void	put_stripin3d(t_player *player, float project_height, int index)
 	t_threed_handle	data;
 
 	if (player->ray[index].was_hit_vertical)
-		data.Xoffset = (int)(player->ray[index].Wallhity) % TILE_SIZE;
+		data.Xoffset = (int)(player->ray[index].Wallhity) % 64;
 	else
-		data.Xoffset = (int)(player->ray[index].Wallhitx) % TILE_SIZE;
+		data.Xoffset = (int)(player->ray[index].Wallhitx) % 64;
 	data.put_pos = (int)((900 / 2) - (project_height / 2));
 	if (data.put_pos < 0)
 		data.put_pos = 0;
@@ -92,10 +92,10 @@ void	render_3d(t_player *player)
 	float	projection_wall_height;
 
 	i = 0;
-	distance_toprojection = 900 / tan((FOV / 2));
+	distance_toprojection = 750 / tan(((60 * (M_PI / 180)) / 2));
 	while (i < 1500)
 	{
-		projection_wall_height = (TILE_SIZE / (player->ray[i].distance * \
+		projection_wall_height = (64 / (player->ray[i].distance * \
 	cos(player->ray[i].ray_angle - player->rotationAngle))) \
 	* distance_toprojection;
 		put_stripin3d(player, projection_wall_height, i);

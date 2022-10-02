@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 14:26:26 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/10/01 21:36:12 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 14:25:06 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,6 @@
 #define ZERO '0'
 #define TAB '	'
 #define ONE '1'
-#define TILE_SIZE 64
-#define MAX_INT  2147483647
-#define FOV      (60 * (M_PI / 180))
-#define MINIMAP_FACTOR 0.3
 
 typedef struct directions
 {

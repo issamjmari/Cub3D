@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:10:06 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 13:06:05 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 14:25:04 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@ void	ft_draw_elem(int x, int y, t_player *player, int color)
 	int	start_x;
 	int	start_y;
 
-	start_y = (y * 64) * MINIMAP_FACTOR;
-	end_y = ((y * 64) + 64) * MINIMAP_FACTOR;
-	end_x = ((x * 64) + 64) * MINIMAP_FACTOR;
+	start_y = (y * 64) * 0.3;
+	end_y = ((y * 64) + 64) * 0.3;
+	end_x = ((x * 64) + 64) * 0.3;
 	while (start_y < end_y)
 	{
-		start_x = (x * 64) * MINIMAP_FACTOR ;
+		start_x = (x * 64) * 0.3 ;
 		while (start_x < end_x)
 		{
 			my_mlx_pixel_put(&player->img, (start_x), (start_y), color);
@@ -59,8 +59,8 @@ void	draw_line(t_player *player, float endX, float endY, int color)
 	pixely = player->y;
 	while (pixels)
 	{
-		my_mlx_pixel_put(&player->img, (pixelx * MINIMAP_FACTOR), \
-	(pixely * MINIMAP_FACTOR), color);
+		my_mlx_pixel_put(&player->img, (pixelx * 0.3), \
+	(pixely * 0.3), color);
 		pixelx += deltax;
 		pixely += deltay;
 		--pixels;

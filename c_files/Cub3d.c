@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:03:46 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/01 21:32:53 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 14:24:10 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ int	iswall(float a, float b, t_player *player)
 	int	wallcheckx;
 	int	wallchecky;
 
-	if (a < 0 || a > player->width * TILE_SIZE
-		|| b < 0 || b > player->height * TILE_SIZE)
+	if (a < 0 || a > player->width * 64
+		|| b < 0 || b > player->height * 64)
 		return (1);
 	wallcheckx = floor(a / 64);
 	wallchecky = floor(b / 64);
