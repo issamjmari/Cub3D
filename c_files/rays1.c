@@ -6,11 +6,11 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:30:33 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/01 21:40:07 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 13:06:05 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../cub3d.h"
 
 void	set_distance(t_ray_steps *data, t_player *player)
 {

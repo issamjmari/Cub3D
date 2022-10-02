@@ -6,11 +6,11 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:32:29 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/01 21:40:11 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/02 13:06:05 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../cub3d.h"
 
 float	distance(t_player *p, float Wallx, float Wally)
 {
