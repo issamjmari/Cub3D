@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ael-hiou <ael-hiou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/09 11:15:12 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/09/09 13:51:14 by ael-hiou         ###   ########.fr       */
+/*   Updated: 2022/10/03 16:33:13 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void	choosing_directions(char *direction, t_directions *path)
 	char	**data;
 	int		i;
 	char	*real_direction_path;
+
 
     data = ft_split(direction, SPACE);
     real_direction_path = NULL;

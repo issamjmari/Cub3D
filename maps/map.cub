@@ -1,9 +1,9 @@
-NO ./textures/path_to_the_north_texture
+F 100,1,1
+NO ./textures/path_to_the_ north_texture
+C 2,88,125
 SO ./textures/path_to_the_south_texture
 WE ./textures/path_to_the_west_texture
-EA ./textures/row.xpm
-F 100,1,1
-C 2,88,125
+EA ./textures/ro w.xpm
 
         11111111111111111111111111111111111111
         100000000110000000000000000000000000001
