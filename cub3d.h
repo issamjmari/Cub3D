@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 14:26:26 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/10/02 14:59:42 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/03 14:44:34 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,4 +196,4 @@ void	vert_distance(t_ray_steps *data, t_player *player);
 void	cast_ray(t_player *player, float angle);
 void	get_rays(t_player *player);
 int		iswall(float a, float b, t_player *player);
-void	change_player_status(t_player *player);
+void	change_player_status(t_player *player, int key);

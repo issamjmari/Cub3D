@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:28:53 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 13:06:05 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/03 14:44:46 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	next_frame(int key, t_player *player)
 	}
 	init_keys(player, key);
 	mlx_clear_window(player->image.mlx, player->image.win);
-	change_player_status(player);
+	change_player_status(player, key);
 	get_rays(player);
 	render_3d(player);
 	mlx_put_image_to_window(player->image.mlx, \
