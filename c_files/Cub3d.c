@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:03:46 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/05 12:34:58 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/05 15:28:03 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,28 +62,10 @@ void	check_up(t_player *player)
 
 	player->rotationAngle += player->turnDirection * player->turnSpeed;
 	a = player->x + cos(player->rotationAngle) * \
-	player->walkSpeed * -1;
+	player->walkSpeed;
 	b = player->y + sin(player->rotationAngle) * \
-	player->walkSpeed * -1;
+	player->walkSpeed;
 	if (!iswall(a, b, player) && !check_line(player, player->x + 50 * \
-		cos(player->rotationAngle), player->y + 50 * sin(player->rotationAngle))
-		&& !check_line(player, player->x + 50 * \
-		cos(player->rotationAngle - (10 * M_PI / 180)), player->y + 50 * \
-		sin(player->rotationAngle - (10 * M_PI / 180)))
-		&& check_line(player, player->x + 50 * \
-		cos(player->rotationAngle + (10 * M_PI / 180)), player->y + 50 * \
-		sin(player->rotationAngle + (10 * M_PI / 180))))
-			set_player(a, b, player);
-	else if (!iswall(a, b, player) && !check_line(player, player->x + 50 * \
-		cos(player->rotationAngle), player->y + 50 * sin(player->rotationAngle))
-		&& check_line(player, player->x + 50 * \
-		cos(player->rotationAngle - (10 * M_PI / 180)), player->y + 50 * \
-		sin(player->rotationAngle - (10 * M_PI / 180)))
-		&& !check_line(player, player->x + 50 * \
-		cos(player->rotationAngle + (10 * M_PI / 180)), player->y + 50 * \
-		sin(player->rotationAngle + (10 * M_PI / 180))))
-			set_player(a, b, player);
-	else if (!iswall(a, b, player) && !check_line(player, player->x + 50 * \
 		cos(player->rotationAngle), player->y + 50 * sin(player->rotationAngle))
 		&& !check_line(player, player->x + 50 * \
 		cos(player->rotationAngle - (10 * M_PI / 180)), player->y + 50 * \
@@ -105,24 +87,6 @@ void	check_down(t_player *player)
 	b = player->y + sin(player->rotationAngle) * \
 	player->walkSpeed * -1;
 	if (!iswall(a, b, player) && !check_line(player, player->x - 50 * \
-		cos(player->rotationAngle), player->y - 50 * sin(player->rotationAngle))
-		&& !check_line(player, player->x - 50 * \
-		cos(player->rotationAngle - (10 * M_PI / 180)), player->y - 50 * \
-		sin(player->rotationAngle - (10 * M_PI / 180)))
-		&& check_line(player, player->x - 50 * \
-		cos(player->rotationAngle + (10 * M_PI / 180)), player->y - 50 * \
-		sin(player->rotationAngle + (10 * M_PI / 180))))
-			set_player(a, b, player);
-	else if (!iswall(a, b, player) && !check_line(player, player->x - 50 * \
-		cos(player->rotationAngle), player->y - 50 * sin(player->rotationAngle))
-		&& check_line(player, player->x - 50 * \
-		cos(player->rotationAngle - (10 * M_PI / 180)), player->y - 50 * \
-		sin(player->rotationAngle - (10 * M_PI / 180)))
-		&& !check_line(player, player->x - 50 * \
-		cos(player->rotationAngle + (10 * M_PI / 180)), player->y - 50 * \
-		sin(player->rotationAngle + (10 * M_PI / 180))))
-			set_player(a, b, player);
-	else if (!iswall(a, b, player) && !check_line(player, player->x - 50 * \
 		cos(player->rotationAngle), player->y - 50 * sin(player->rotationAngle))
 		&& !check_line(player, player->x - 50 * \
 		cos(player->rotationAngle - (10 * M_PI / 180)), player->y - 50 * \
@@ -169,9 +133,9 @@ void	check_right_move(t_player *player)
 	newrotation = player->rotationAngle - (M_PI / 2);
 	a = player->x + cos(newrotation) * 10;
 	b = player->y + sin(newrotation) * 10;
-	if (!iswall(a, b, player) && !check_line(player, player->x + 50 * \
-		cos(player->rotationAngle + (90 * M_PI / 180)), player->y + 50 * sin(player->rotationAngle + (90 * M_PI / 180))))
-			set_player(a, b, player);
+	if (!iswall(a, b, player) && !check_line(player, player->x + 30 * cos(newrotation) \
+	, player->y + 30 * sin(newrotation)))
+		set_player(a, b, player);
 }
 
 void	check_left_move(t_player *player)
@@ -184,8 +148,8 @@ void	check_left_move(t_player *player)
 	newrotation = player->rotationAngle - (M_PI / 2);
 	a = player->x + cos(newrotation) * 10 * -1;
 	b = player->y + sin(newrotation) * 10 * -1;
-	if (!iswall(a, b, player) && !check_line(player, player->x + 50 * \
-		cos(player->rotationAngle - (90 * M_PI / 180)), player->y + 50 * sin(player->rotationAngle - (90 * M_PI / 180))))
+	if (!iswall(a, b, player) && !check_line(player, player->x - 30 * cos(newrotation) \
+	, player->y - 30 * sin(newrotation)))
 		set_player(a, b, player);
 }
 void	change_player_status(t_player *player, int key)
