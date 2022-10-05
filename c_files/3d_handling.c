@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:14:54 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/03 14:44:11 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/05 21:29:52 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ int index, float project_height)
 	{
 		yoffset = ((data->loop++ + ((project_height / 2) - (900 / 2))) * \
 	((float)(64 / project_height)));
+	// printf("first %f sum %f\n", ((project_height / 2) - (900 / 2)), ((data->loop++ + ((project_height / 2) - (900 / 2)))));
+		// printf("%d\n", yoffset);
 		if (yoffset < 0)
 			yoffset = 0;
 		if (yoffset > 63 || data->Xoffset > 63)
@@ -46,6 +48,8 @@ int index, float project_height)
 	{
 		yoffset = (data->loop++ + ((project_height / 2) - (900 / 2))) \
 	* ((float)(64 / project_height));
+	// printf("first %f sum %f\n", ((project_height / 2) - (900 / 2)), ((data->loop++ + ((project_height / 2) - (900 / 2)))));
+		// printf("%d\n", yoffset);
 		if (yoffset < 0)
 			yoffset = 0;
 		if (yoffset > 63 || data->Xoffset > 63)
