@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 14:26:26 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/10/03 14:44:34 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/06 20:29:23 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,9 @@ void	get_value_back(t_player *player);
 void	set_player(float a, float b, t_player *player);
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 void	ft_draw_elem(int x, int y, t_player *player, int color);
-void	draw_line(t_player *player, float endX, float endY, int color);
+void	draw_line1(t_player *player, float endX, float endY, float angle);
+void	draw_line2(float begx, float begy, float endx, float endy, t_player *player);
+void	render_minimap(t_player *player);
 unsigned int	get_color(int y, int x, t_data *img);
 void	put_image_strip(t_player *player, int index, \
 t_threed_handle *data, int yoffset);

@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:06:03 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/05 12:47:25 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/06 20:32:38 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	init_player(t_directions *path, t_player *player)
 	player->walkDirection = 0;
 	player->tab_press = 0;
 	player->rotationAngle = get_init_pos(path);
-	player->walkSpeed = 0.70 * 64;
+	player->walkSpeed = 0.40 * 64;
 	player->turnSpeed = 10 * (M_PI / 180);
 	player->image.mlx = mlx_init();
 	player->image.win = mlx_new_window(player->image.mlx, 1500, 900, "Cub3d");

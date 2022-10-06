@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:03:46 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/05 15:28:03 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/06 16:37:14 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,7 @@ void	start_game(t_directions *path)
 	create_images(&player);
 	get_rays(&player);
 	render_3d(&player);
+	render_minimap(&player);
 	mlx_put_image_to_window(player.image.mlx, player.image.win, \
 	player.img.img, 0, 0);
 	mlx_hook(player.image.win, 2, 0, next_frame, &player);
