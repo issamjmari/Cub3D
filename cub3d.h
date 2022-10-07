@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 14:26:26 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/10/06 20:29:23 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/07 14:30:45 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,8 @@ typedef struct s_player
 {
 	float		x;
 	float		y;
+	float		temp_x;
+	float		temp_y;
 	int *width_for_each;
 	int height;
 	int width;

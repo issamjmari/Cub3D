@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:10:06 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/06 20:47:24 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/07 15:58:40 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,12 @@ void	draw_line2(float begx, float begy, float endx, float endy, t_player *player
 
 void	draw_line1(t_player *player, float endX, float endY, float angle)
 {
-	(void) angle;
 	double pixelX;
 	double pixelY;
 	double deltaX;
 	double deltaY;
-	double start_circlex = 90;
-	double start_circley = 90;
+	double start_circlex = 140;
+	double start_circley = 140;
 	int pixels;
 
 	deltaX = (endX - player->x);

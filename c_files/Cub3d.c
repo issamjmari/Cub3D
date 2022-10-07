@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:03:46 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/06 16:37:14 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/07 16:22:12 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,23 @@ void	check_up(t_player *player)
 {
 	float	a;
 	float	b;
+	float	temp_a;
+	float	temp_b;
 
 	player->rotationAngle += player->turnDirection * player->turnSpeed;
 	a = player->x + cos(player->rotationAngle) * \
 	player->walkSpeed;
 	b = player->y + sin(player->rotationAngle) * \
 	player->walkSpeed;
+	temp_a = player->x + cos(player->rotationAngle) * \
+	0.5f;
+	temp_b = player->y + sin(player->rotationAngle) * \
+	0.5f;
+	if(!iswall(temp_a, temp_b, player))
+	{
+		player->temp_x = temp_a;
+		player->temp_y = temp_b;
+	}
 	if (!iswall(a, b, player) && !check_line(player, player->x + 50 * \
 		cos(player->rotationAngle), player->y + 50 * sin(player->rotationAngle))
 		&& !check_line(player, player->x + 50 * \
@@ -80,12 +91,23 @@ void	check_down(t_player *player)
 {
 	float	a;
 	float	b;
+	float	temp_a;
+	float	temp_b;
 
 	player->rotationAngle += player->turnDirection * player->turnSpeed;
 	a = player->x + cos(player->rotationAngle) * \
 	player->walkSpeed * -1;
 	b = player->y + sin(player->rotationAngle) * \
 	player->walkSpeed * -1;
+	temp_a = player->x + cos(player->rotationAngle) * \
+	0.5f * -1;
+	temp_b = player->y + sin(player->rotationAngle) * \
+	0.5f * -1;
+	if(!iswall(temp_a, temp_b, player))
+	{
+		player->temp_x = temp_a;
+		player->temp_y = temp_b;
+	}
 	if (!iswall(a, b, player) && !check_line(player, player->x - 50 * \
 		cos(player->rotationAngle), player->y - 50 * sin(player->rotationAngle))
 		&& !check_line(player, player->x - 50 * \
@@ -105,6 +127,11 @@ void	check_left_angle(t_player *player)
 	player->rotationAngle += player->turnDirection * player->turnSpeed;
 	a = player->x + cos(player->rotationAngle) * -1;
 	b = player->y + sin(player->rotationAngle) * -1;
+	if(!iswall(a, b, player))
+	{
+		player->temp_x = a;
+		player->temp_y = b;
+	}
 	if (!iswall(a, b, player) && !check_line(player, player->x - 30 * \
 		cos(player->rotationAngle), player->y - 30 * sin(player->rotationAngle)))
 		set_player(a, b, player);
@@ -118,6 +145,11 @@ void	check_right_angle(t_player *player)
 	player->rotationAngle += player->turnDirection * player->turnSpeed;
 	a = player->x + cos(player->rotationAngle);
 	b = player->y + sin(player->rotationAngle);
+	if(!iswall(a, b, player))
+	{
+		player->temp_x = a;
+		player->temp_y = b;
+	}
 	if (!iswall(a, b, player) && !check_line(player, player->x + 30 * \
 		cos(player->rotationAngle), player->y + 30 * sin(player->rotationAngle)))
 		set_player(a, b, player);
@@ -128,11 +160,20 @@ void	check_right_move(t_player *player)
 	float	a;
 	float	b;
 	float	newrotation;
+	float	temp_a;
+	float	temp_b;
 
 	player->rotationAngle += player->turnDirection * player->turnSpeed;
 	newrotation = player->rotationAngle - (M_PI / 2);
 	a = player->x + cos(newrotation) * 10;
 	b = player->y + sin(newrotation) * 10;
+	temp_a = player->x + cos(newrotation);
+	temp_b = player->y + sin(newrotation);
+	if(!iswall(temp_a, temp_b, player))
+	{
+		player->temp_x = temp_a;
+		player->temp_y = temp_b;
+	}
 	if (!iswall(a, b, player) && !check_line(player, player->x + 30 * cos(newrotation) \
 	, player->y + 30 * sin(newrotation)))
 		set_player(a, b, player);
@@ -143,11 +184,20 @@ void	check_left_move(t_player *player)
 	float	a;
 	float	b;
 	float	newrotation;
+	float	temp_a;
+	float	temp_b;
 
 	player->rotationAngle += player->turnDirection * player->turnSpeed;
 	newrotation = player->rotationAngle - (M_PI / 2);
 	a = player->x + cos(newrotation) * 10 * -1;
 	b = player->y + sin(newrotation) * 10 * -1;
+	temp_a = player->x + cos(newrotation) * -1;
+	temp_b = player->y + sin(newrotation) * -1;
+	if(!iswall(temp_a, temp_b, player))
+	{
+		player->temp_x = temp_a;
+		player->temp_y = temp_b;
+	}
 	if (!iswall(a, b, player) && !check_line(player, player->x - 30 * cos(newrotation) \
 	, player->y - 30 * sin(newrotation)))
 		set_player(a, b, player);
@@ -168,6 +218,11 @@ void	change_player_status(t_player *player, int key)
 		check_right_angle(player);
 }
 
+int	mouse_handle(int x, int y, t_player *player)
+{
+	printf("%d and %d\n", x, y);
+	return 1;
+}
 void	start_game(t_directions *path)
 {
 	t_player	player;
@@ -182,5 +237,6 @@ void	start_game(t_directions *path)
 	mlx_hook(player.image.win, 2, 0, next_frame, &player);
 	mlx_hook(player.image.win, 3, 0, stop, NULL);
 	mlx_hook(player.image.win, 17, (1L << 15), close_win, &player);
+	mlx_hook(player.image.win, 6, 0, mouse_handle, &player);
 	mlx_loop(player.image.mlx);
 }

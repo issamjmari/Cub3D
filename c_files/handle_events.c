@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:28:53 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/06 20:53:26 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/07 15:59:44 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 void	ft_draw_elem(int x, int y, t_player *player, int color)
 {
-	int end_y = ((y) + 10);
-	int end_x = ((x) + 10);
+	int end_y = (y + 10);
+	int end_x = (x + 10);
 	int start_x;
-	int start_y = (y);
+	int start_y = y;
 	while (start_y < end_y)
 	{
-		start_x = (x);
+		start_x = x;
 		while (start_x < end_x)
 		{
 			my_mlx_pixel_put(&player->img, start_x, start_y, color);
@@ -28,7 +28,7 @@ void	ft_draw_elem(int x, int y, t_player *player, int color)
 		}
 		start_y++;
 	}
-	draw_line2(82, 82, 82 + 30 * cos(player->rotationAngle), 82 + 30 * sin(player->rotationAngle), player);
+	draw_line2(135, 135, 135 + 30 * cos(player->rotationAngle), 135 + 30 * sin(player->rotationAngle), player);
 }
 
 void	render_minimap(t_player *player)
@@ -38,14 +38,14 @@ void	render_minimap(t_player *player)
 
 	i = 0;
 	angle = (M_PI / 2);
-	while (i < 1000)
+	while (i < 2500)
 	{
 		angle = remainder(angle, 2 * M_PI);
-		draw_line1(player, player->x + 100 * cos(angle), player->y + 100 * sin(angle), angle);
-		angle += ((360 * (M_PI / 180)) / 1000);
+		draw_line1(player, player->x + 150 * cos(angle), player->y + 150 * sin(angle), angle);
+		angle += ((360 * (M_PI / 180)) / 2500);
 		i++;
 	}
-	ft_draw_elem(80, 80, player, 0x0000FF);
+	ft_draw_elem(130, 130, player, 0x0000FF);
 }
 
 int	next_frame(int key, t_player *player)
