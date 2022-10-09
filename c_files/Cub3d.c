@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:03:46 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/07 16:22:12 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/08 16:15:14 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,26 +31,26 @@ int	iswall(float a, float b, t_player *player)
 
 int	check_line(t_player *player, float endX, float endY)
 {
-	double pixelX;
-	double pixelY;
-	double deltaX;
-	double deltaY;
-	int pixels;
+	double	pixelx;
+	double	pixely;
+	double	deltax;
+	double	deltay;
+	int		pixels;
 
-	deltaX = (endX - player->x);
-	deltaY = (endY - player->y);
-	pixels = sqrt((deltaX * deltaX) + (deltaY * deltaY));
-	deltaX /= pixels;
-	deltaY /= pixels;
-	pixelX = player->x;
-	pixelY = player->y;
+	deltax = (endX - player->x);
+	deltay = (endY - player->y);
+	pixels = sqrt((deltax * deltax) + (deltay * deltay));
+	deltax /= pixels;
+	deltay /= pixels;
+	pixelx = player->x;
+	pixely = player->y;
 	while (pixels)
 	{
-	   if(iswall(pixelX, pixelY, player))
+		if (iswall(pixelx, pixely, player))
 			return (1);
-	    pixelX += deltaX;
-	    pixelY += deltaY;
-	    --pixels;
+		pixelx += deltax;
+		pixely += deltay;
+		--pixels;
 	}
 	return (0);
 }
@@ -193,15 +193,17 @@ void	check_left_move(t_player *player)
 	b = player->y + sin(newrotation) * 10 * -1;
 	temp_a = player->x + cos(newrotation) * -1;
 	temp_b = player->y + sin(newrotation) * -1;
-	if(!iswall(temp_a, temp_b, player))
+	if (!iswall(temp_a, temp_b, player))
 	{
 		player->temp_x = temp_a;
 		player->temp_y = temp_b;
 	}
-	if (!iswall(a, b, player) && !check_line(player, player->x - 30 * cos(newrotation) \
+	if (!iswall(a, b, player) && \
+	!check_line(player, player->x - 30 * cos(newrotation) \
 	, player->y - 30 * sin(newrotation)))
 		set_player(a, b, player);
 }
+
 void	change_player_status(t_player *player, int key)
 {
 	if (key == 13 || key == 126)
@@ -218,11 +220,42 @@ void	change_player_status(t_player *player, int key)
 		check_right_angle(player);
 }
 
+void	add_angle(t_player *player, int x, int y)
+{
+	if (x >= 0 && y >= 0 && x > 750)
+	{
+		player->rotationAngle += player->turnSpeed * 0.2;
+		player->x += cos(player->rotationAngle);
+		player->y += sin(player->rotationAngle);
+	}
+	else if (x >= 0 && y >= 0 && x < 750)
+	{
+		player->rotationAngle += player->turnSpeed * 0.2 * -1;
+		player->x += cos(player->rotationAngle) * -1;
+		player->y += sin(player->rotationAngle) * -1;
+	}
+}
+
 int	mouse_handle(int x, int y, t_player *player)
 {
-	printf("%d and %d\n", x, y);
-	return 1;
+	float	a;
+	float	b;
+
+	if (!player->mouse)
+		return (1);
+	if (x < 0 || x > 1500 || y < 0 || y > 900)
+		return (1);
+	if (x == 750)
+		return (1);
+	add_angle(player, x, y);
+	mlx_clear_window(player->image.mlx, player->image.win);
+	get_rays(player);
+	render_3d(player);
+	mlx_put_image_to_window(player->image.mlx, \
+		player->image.win, player->img.img, 0, 0);
+	return (0);
 }
+
 void	start_game(t_directions *path)
 {
 	t_player	player;
@@ -231,7 +264,6 @@ void	start_game(t_directions *path)
 	create_images(&player);
 	get_rays(&player);
 	render_3d(&player);
-	render_minimap(&player);
 	mlx_put_image_to_window(player.image.mlx, player.image.win, \
 	player.img.img, 0, 0);
 	mlx_hook(player.image.win, 2, 0, next_frame, &player);

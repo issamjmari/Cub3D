@@ -6,50 +6,18 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:28:53 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/07 15:59:44 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/08 16:08:55 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
 
-void	ft_draw_elem(int x, int y, t_player *player, int color)
-{
-	int end_y = (y + 10);
-	int end_x = (x + 10);
-	int start_x;
-	int start_y = y;
-	while (start_y < end_y)
-	{
-		start_x = x;
-		while (start_x < end_x)
-		{
-			my_mlx_pixel_put(&player->img, start_x, start_y, color);
-			start_x++;
-		}
-		start_y++;
-	}
-	draw_line2(135, 135, 135 + 30 * cos(player->rotationAngle), 135 + 30 * sin(player->rotationAngle), player);
-}
-
-void	render_minimap(t_player *player)
-{
-	int		i;
-	float	angle;
-
-	i = 0;
-	angle = (M_PI / 2);
-	while (i < 2500)
-	{
-		angle = remainder(angle, 2 * M_PI);
-		draw_line1(player, player->x + 150 * cos(angle), player->y + 150 * sin(angle), angle);
-		angle += ((360 * (M_PI / 180)) / 2500);
-		i++;
-	}
-	ft_draw_elem(130, 130, player, 0x0000FF);
-}
-
 int	next_frame(int key, t_player *player)
 {
+	if (key == 48 && player->mouse == 0)
+		player->mouse = 1;
+	else if (key == 48 && player->mouse == 1)
+		player->mouse = 0;
 	if (key == 53)
 	{
 		free(player->ray);
@@ -61,7 +29,6 @@ int	next_frame(int key, t_player *player)
 	change_player_status(player, key);
 	get_rays(player);
 	render_3d(player);
-	render_minimap(player);
 	mlx_put_image_to_window(player->image.mlx, \
 		player->image.win, player->img.img, 0, 0);
 	get_value_back(player);
