@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:14:54 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/06 14:17:14 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/10 14:40:34 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,20 @@ int index, float project_height)
 
 	while (data->ceil_y < data->put_pos)
 		my_mlx_pixel_put(&player->img, index, data->ceil_y++, \
-		player->data->CEILING_COLOR);
+		player->data->ceiling_color);
 	while (data->ceil_y < data->floor_y)
 	{
 		yoffset = ((data->loop++ + ((project_height / 2) - (900 / 2))) * \
 	((float)(64 / project_height)));
 		if (yoffset < 0)
 			yoffset = 0;
-		if (yoffset > 63 || data->Xoffset > 63)
+		if (yoffset > 63 || data->xoffset > 63)
 			break ;
 		put_image_strip(player, index, data, yoffset);
 	}
 	while (data->floor_y < 900)
 		my_mlx_pixel_put(&player->img, index, data->floor_y++, \
-		player->data->FLOOR_COLOR);
+		player->data->floor_color);
 }
 
 void	handle_single3d(t_threed_handle *data, t_player *player, \
@@ -48,20 +48,20 @@ int index, float project_height)
 	* ((float)(64 / project_height));
 		if (yoffset < 0)
 			yoffset = 0;
-		if (yoffset > 63 || data->Xoffset > 63)
+		if (yoffset > 63 || data->xoffset > 63)
 			break ;
 		if (player->ray[index].ray_content == 1)
 			my_mlx_pixel_put(&player->img, index, y++, \
-			get_color(yoffset, data->Xoffset, &player->img1));
+			get_color(yoffset, data->xoffset, &player->img1));
 		else if (player->ray[index].ray_content == 2)
 			my_mlx_pixel_put(&player->img, index, y++, \
-			get_color(yoffset, data->Xoffset, &player->img2));
+			get_color(yoffset, data->xoffset, &player->img2));
 		else if (player->ray[index].ray_content == 3)
 			my_mlx_pixel_put(&player->img, index, y++, \
-			get_color(yoffset, data->Xoffset, &player->img3));
+			get_color(yoffset, data->xoffset, &player->img3));
 		else if (player->ray[index].ray_content == 4)
 			my_mlx_pixel_put(&player->img, index, y++, \
-			get_color(yoffset, data->Xoffset, &player->img4));
+			get_color(yoffset, data->xoffset, &player->img4));
 	}
 }
 
@@ -70,9 +70,9 @@ void	put_stripin3d(t_player *player, float project_height, int index)
 	t_threed_handle	data;
 
 	if (player->ray[index].was_hit_vertical)
-		data.Xoffset = (int)(player->ray[index].Wallhity) % 64;
+		data.xoffset = (int)(player->ray[index].wallhity) % 64;
 	else
-		data.Xoffset = (int)(player->ray[index].Wallhitx) % 64;
+		data.xoffset = (int)(player->ray[index].wallhitx) % 64;
 	data.put_pos = (int)((900 / 2) - (project_height / 2));
 	if (data.put_pos < 0)
 		data.put_pos = 0;
@@ -96,7 +96,7 @@ void	render_3d(t_player *player)
 	while (i < 1500)
 	{
 		projection_wall_height = (64 / (player->ray[i].distance * \
-	cos(player->ray[i].ray_angle - player->rotationAngle))) \
+	cos(player->ray[i].ray_angle - player->rotationangle))) \
 	* distance_toprojection;
 		put_stripin3d(player, projection_wall_height, i);
 		i++;

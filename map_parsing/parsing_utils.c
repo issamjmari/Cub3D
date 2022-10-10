@@ -6,20 +6,17 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/09 11:15:12 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/10/03 16:33:13 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/10 14:42:14 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
 
-void	init(t_directions *path)
+void    texturescounterChecker(int *texturecounter, char *message)
 {
-	path->NORTH = NULL;
-	path->EAST = NULL;
-	path->WEST = NULL;
-	path->SOUTH = NULL;
-	path->CEILING_COLOR = 0;
-	path->FLOOR_COLOR = 0;		
+	if (*texturecounter == 1)
+		errorMessage(message);
+	*texturecounter = 1;
 }
 
 void	ft_free(char **data)
@@ -32,55 +29,34 @@ void	ft_free(char **data)
 	free (data);
 }
 
-void	error_message(char *message)
+void	errorMessage(char *message)
 {
 	printf("%s\n", message);
-	 exit (1);
+	exit (1);
 }
 
-void	choosing_directions(char *direction, t_directions *path)
-{
-	char	**data;
-	int		i;
-	char	*real_direction_path;
-
-
-    data = ft_split(direction, SPACE);
-    real_direction_path = NULL;
-    i = 1;
-    while (data[i])
-        real_direction_path = ft_strjoin(real_direction_path, data[i++]);
-    if (!ft_strncmp(data[0], "NO")) {
-        path->NORTH = real_direction_path;
-    }
-	else if (!ft_strncmp(data[0], "WE"))
-		path->WEST = real_direction_path;
-	else if (!ft_strncmp(data[0], "EA"))
-		path->EAST = real_direction_path;
-	else if(!ft_strncmp(data[0], "SO"))
-		path->SOUTH = real_direction_path;
-	else
-		error_message("\033[0;31mMap Parsing Error: Write A Correct Direction");
-	ft_free (data);
-}
-
-int	get_allocation_size(char *data)
+int	getSize(char **data)
 {
 	int	i;
-	int	counter;
 
-	counter = 0;
 	i = 0;
-	if (data[i] != FLOOR && data[i] != CEILLING)
-		error_message("\033[0;31mMap Parsing Error: Floor Or Ceilling Color Missing");
-	i++;
 	while (data[i])
-	{
-		if (!ft_isdigit(data[i]) && data[i] != COMMA && data[i] != SPACE)
-			error_message("\033[0;31mMap Parsing Error: Wrong RGB Format");
-		if (data[i] != SPACE)
-			counter++;
 		i++;
-	}
-	return (counter + 1);
+	return (i);
+}
+
+void    missingTexture(t_checkDuplicate *vars)
+{
+    if (vars->socounter == 0)
+        errorMessage(south_TEXTURE_MISSING);
+    else if (vars->wecounter == 0)
+        errorMessage(west_TEXTURE_MISSING);
+    else if (vars->nocounter == 0)
+        errorMessage(north_TEXTURE_MISSING);
+    else if (vars->eacounter == 0)
+        errorMessage(east_TEXTURE_MISSING);
+    else if (vars->fcounter == 0)
+        errorMessage(floor_color_MISSING);
+    else if (vars->ccounter == 0)
+        errorMessage(ceiling_color_MISSING);
 }

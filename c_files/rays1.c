@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:30:33 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 20:06:47 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/10 14:36:09 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	set_distance(t_ray_steps *data, t_player *player)
 {
 	if (data->found_wall)
-		data->distance = distance(player, data->Wall_x, data->Wall_y);
+		data->distance = distance(player, data->wall_x, data->wall_y);
 	else
 		data->distance = 2147483647;
 }
@@ -35,8 +35,8 @@ void	horz_distance(t_ray_steps *data, t_player *player)
 			horz_tochecky -= 1;
 		if (iswall(data->x_intercept, horz_tochecky, player))
 		{
-			data->Wall_x = data->x_intercept;
-			data->Wall_y = data->y_intercept;
+			data->wall_x = data->x_intercept;
+			data->wall_y = data->y_intercept;
 			data->found_wall = TRUE;
 			break ;
 		}
@@ -62,8 +62,8 @@ void	vert_distance(t_ray_steps *data, t_player *player)
 		if (iswall(vert_tocheckx, data->y_intercept, player))
 		{
 			data->found_wall = TRUE;
-			data->Wall_x = data->x_intercept;
-			data->Wall_y = data->y_intercept;
+			data->wall_x = data->x_intercept;
+			data->wall_y = data->y_intercept;
 			break ;
 		}
 		data->x_intercept += data->xstep;
@@ -97,7 +97,7 @@ void	get_rays(t_player *player)
 	projec = (750 / tan(((60 * (M_PI / 180)) / 2)));
 	while (rayid < 1500)
 	{
-		angle = player->rotationAngle + atan((rayid - (1500 / 2)) / projec);
+		angle = player->rotationangle + atan((rayid - (1500 / 2)) / projec);
 		cast_ray(player, angle);
 		rayid++;
 	}

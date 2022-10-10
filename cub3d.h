@@ -6,63 +6,114 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 14:26:26 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/10/07 17:50:36 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/10 14:48:23 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include "includes/get_next_line.h"
-#include "library/library.h"
-#include <mlx.h>
-#include <math.h>
-#include <stdlib.h>
+#ifndef CUB3D_H
+# define CUB3D_H
+# include <stdio.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include "includes/get_next_line.h"
+# include "library/library.h"
+# include <mlx.h>
+# include <math.h>
+# include <stdlib.h>
 
-#define FLOOR 'F'
-#define CEILLING 'C'
-#define TRUE 1
-#define FALSE 0
-#define SPACE ' '
-#define COMMA ','
-#define NEW_LINE '\n'
-#define ZERO '0'
-#define TAB '	'
-#define ONE '1'
+# define DOUBLE_NEW_LINE "\033[0;31mError \nMAP Contain Multiple New Lines"
+# define ceiling_color_MISSING "\033[0;31mError \nCeiling Color Is Missing"
+# define floor_color_MISSING "\033[0;31mError \nFloor Color Is Missing"
+# define south_TEXTURE_MISSING "\033[0;31mError \nsouth Texture Is Missing"
+# define north_TEXTURE_MISSING "\033[0;31mError \nnorth Texture Is Missing"
+# define west_TEXTURE_MISSING "\033[0;31mError \nwest Texture Is Missing"
+# define east_TEXTURE_MISSING "\033[0;31mError \neast Texture Is Missing"
+# define north_TEXTURE_DUPLICATE "\033[0;31mError \nnorth Texture Already Defined"
+# define west_TEXTURE_DUPLICATE "\033[0;31mError \nwest Texture Already Defined"
+# define east_TEXTURE_DUPLICATE "\033[0;31mError \neast Texture Already Defined"
+# define south_TEXTURE_DUPLICATE "\033[0;31mError \nsouth Texture Already Defined"
+# define FLOOR_DUPLICATE "\033[0;31mError \nFloor Color Already Defined"
+# define CEILING_DUPLICATE "\033[0;31mError \nCeiling Color Already Defined"
+# define MISSING_PLAYER_MSG "\033[0;31mError \nMap Must Contain A Player"
+# define INVALID_MAP "\033[0;31mError \nInvalid Map"
+# define SURROUNDED_SPACE_MSG \
+"\033[0;31mError \nSpace Should Be Surrounded By Walls"
+# define SURROUNDED_MSG "\033[0;31mError \nMap Should Be Surrounded By Walls"
+# define INVALID_DIRECTION_MSG "\033[0;31mError \nInvalid Input"
+# define NOTFOUND_TEXTURE_MSG "\033[0;31mError \nTexture Not Found"
+# define WRONG_RGB_MSG "\033[0;31mError \nWrong RGB Format"
+# define FLOOR_CEILING_MISSING_MSG \
+"\033[0;31mError \nFloor Or Ceiling Color Missing"
+# define UNWANTED_CHARACTER_MSG "\033[0;31mError \nUnwanted Character Exist"
+# define CONTAIN_MORE_MSG "\033[0;31mError \nMap Mustn't Contain More Than 1 Player"
+# define ERROR_OCCURRED "\033[0;31mError \nError occurred"
+# define _north "NO"
+# define _west "WE"
+# define _east "EA"
+# define _south "SO"
+# define FLOOR 'F'
+# define CEILING 'C'
+# define TRUE 1
+# define FALSE 0
+# define SPACE ' '
+# define COMMA ','
+# define NEW_LINE '\n'
+# define ZERO '0'
+# define TAB '	'
+# define ONE '1'
 
+
+typedef struct map_content_vars
+{
+	char	*entereddata;
+	char	*trimmedData;
+	int		linescounter;
+	int		i;
+}	t_mapContentVars;
+
+typedef struct checkDuplicate
+{
+    int	fcounter;
+    int	ccounter;
+    int	nocounter;
+    int	socounter;
+    int	eacounter;
+    int	wecounter;
+}	t_checkDuplicate;
 typedef struct directions
 {
-	char	START_POSITION;
-	int     PLAYER_X;
-	int		PLAYER_Y;
-	int		FLOOR_COLOR;
-	int		CEILING_COLOR;
-	char	*NORTH;
-	char	*WEST;
-	char	*EAST;
-	char	*SOUTH;
+	char	startposition;
+	int		player_x;
+	int		player_y;
+	int		floor_color;
+	int		ceiling_color;
+	char	*north;
+	char	*west;
+	char	*east;
+	char	*south;
 	char	**map;
-}
-				t_directions;
+}	t_directions;
+
 typedef struct checking_rgb
 {
-	int	i;
-	int start;
-	int end;
-	int	commas_counter;
-	int	color_number;
-	int	value;
-	int	base;
+	int		digitscounter;
+	int		i;
+	int		start;
+	int		end;
+	int		commascounter;
+	int		colornumber;
+	int		value;
+	int		base;
 	char	*number;	
 }			t_checking_rgb;
 
 typedef struct getting_textures
 {
-	int				map_size;
-	int				i;
-	char			**s;
-	char			**data;
-}					t_getting_textures;
+	int		map_size;
+	int		i;
+	char	**s;
+	char	**data;
+}	t_getting_textures;
 
 typedef struct s_img
 {
@@ -74,133 +125,159 @@ typedef struct s_img
 	void	*win;
 }	t_img;
 
-typedef struct  s_data {
-	void    *img;
-	char    *addr;
-	int             bits_per_pixel;
-	int             line_length;
-	int             endian;
+typedef struct s_data {
+	void		*img;
+	char		*addr;
+	int			bits_per_pixel;
+	int			line_length;
+	int			endian;
 }	t_data;
+
 typedef struct s_ray
 {
-	float distance;
-	float ray_angle;
-	float Wallhitx;
-	float Wallhity;
-	int   was_hit_vertical;
-	int ray_content;
-	int isRay_left;
-	int isRay_right;
-	int isRay_down;
-	int isRay_up;
+	float	distance;
+	float	ray_angle;
+	float	wallhitx;
+	float	wallhity;
+	int		was_hit_vertical;
+	int		ray_content;
+	int		isray_left;
+	int		isray_right;
+	int		isray_down;
+	int		isray_up;
 }	t_ray;
 
 typedef struct s_player
 {
-	float		x;
-	float		y;
-	float		temp_x;
-	float		temp_y;
-	float		prev_x;
-	float		prev_y;
-	int *width_for_each;
-	int height;
-	int width;
-	int turnDirection;
-	int walkDirection;
-	int moveDirection;
-	int	mouse;
-	int	tab_press;
-	float rotationAngle;
-	float walkSpeed;
-	float turnSpeed;
-	int pic_width;
-	int pic_height;
-	t_data img1;
-	t_data img2;
-	t_data img3;
-	t_data img4;
-	t_data img5;
-	t_img	image;
-	t_data img;
-	t_directions *data;
-	t_ray  *ray;
-	int *fixes;
+	float			x;
+	float			y;
+	int				*width_for_each;
+	int				height;
+	int				width;
+	int				turndirection;
+	int				walkdirection;
+	int				movedirection;
+	int				mouse;
+	int				tab_press;
+	float			rotationangle;
+	float			walkspeed;
+	float			turnspeed;
+	int				pic_width;
+	int				pic_height;
+	t_data			img1;
+	t_data			img2;
+	t_data			img3;
+	t_data			img4;
+	t_data			img5;
+	t_img			image;
+	t_data			img;
+	t_directions	*data;
+	t_ray			*ray;
 }	t_player;
 
 typedef struct s_ray_steps
 {
-	float x_intercept;
-	float y_intercept;
-	float xstep;
-	float ystep;
-	int   ray_down;
-	int   ray_up;
-	int   ray_left;
-	int   ray_right;
-	float distance;
-	float found_wall;
-	float Wall_x;
-	float Wall_y;
-	int vertical;
+	float	x_intercept;
+	float	y_intercept;
+	float	xstep;
+	float	ystep;
+	int		ray_down;
+	int		ray_up;
+	int		ray_left;
+	int		ray_right;
+	float	distance;
+	float	found_wall;
+	float	wall_x;
+	float	wall_y;
+	int		vertical;
 }	t_ray_steps;
+
+typedef struct s_second_part_init
+{
+	char	*map;
+	char	*entereddata;
+	int		isplayerexist;
+	int		i;
+	int		counter;
+}	t_secondPartVars;
 
 typedef struct s_threed_handle
 {
-	int Xoffset;
-	int ceil_y;
-	int floor_y;
-	int loop;
-	int put_pos;
-} t_threed_handle;
+	int	xoffset;
+	int	ceil_y;
+	int	floor_y;
+	int	loop;
+	int	put_pos;
+}	t_threed_handle;
 
-void	checking_rgb_format_utils(char *directions, t_checking_rgb *var);
-void	checking_rgb_format_init(t_checking_rgb *var);
-int		checking_rgb_format(char *directions);
-void	choosing_directions(char *direction, t_directions *path);
-void	ft_free(char **data);
-void	error_message(char *message);
-void	init(t_directions *path);
-void	is_surrounded_by_walls(char **map, int map_height);
-void	map_validation(t_directions *path);
-void	error_message(char *message);
-int		get_size(char **data);
-int		get_allocation_size(char *data);
-void	start_game(t_directions *path);
-void	init_keys(t_player *player, int key);
-float	get_init_pos(t_directions *path);
-void	init_player(t_directions *path, t_player *player);
-void	get_value_back(t_player *player);
-void	set_player(float a, float b, t_player *player);
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
-void	ft_draw_elem(int x, int y, t_player *player, int color);
-void	draw_line1(t_player *player, float endX, float endY, float angle);
-void	draw_line2(float begx, float begy, float endx, float endy, t_player *player);
-void	render_minimap(t_player *player);
+int				is_full_spaces(char *entereddata);
+int				check_for_double_newlines(char *map);
+void			missingTexture(t_checkDuplicate *vars);
+void			map_content_init(t_mapContentVars *vars);
+void			second_part_init(t_secondPartVars *vars);
+void			unwanted_characters(t_secondPartVars *vars);
+void			checking_duplicate_init(t_checkDuplicate *checkDuplicate);
+void			rgb_init(t_checking_rgb *var);
+void			unwantedCharactersUtils(int *isExist, char **map, \
+t_directions *path, int i);
+void			unwantedCharacters(char **map, t_directions *path);
+void			texturescounterChecker(int *texturecounter, char *message);
+void			checkingRGBFormatUtils(char *directions, t_checking_rgb *var);
+int				checkingRGBFormat(char *secondPart);
+void			choosing_directions(char *firstPart, char *secondPart, \
+t_directions *path, t_checkDuplicate *checkDuplicate);
+void			ft_free(char **data);
+void			errorMessage(char *message);
+void			path_init(t_directions *path);
+void			isSurroundedByWalls(char **map, int map_height);
+void			mapValidation(t_directions *path);
+void			errorMessage(char *message);
+int				getSize(char **data);
+void			start_game(t_directions *path);
+void			initKeys(t_player *player, int key);
+float			getInitPos(t_directions *path);
+void			init_player(t_directions *path, t_player *player);
+void			get_value_back(t_player *player);
+void			set_player(float a, float b, t_player *player);
+void			my_mlx_pixel_put(t_data *data, int x, int y, int color);
+void			ft_draw_elem(int x, int y, t_player *player, int color);
+void			draw_line(t_player *player, float endX, float endY, int color);
 unsigned int	get_color(int y, int x, t_data *img);
-void	put_image_strip(t_player *player, int index, \
+void			put_image_strip(t_player *player, int index, \
 t_threed_handle *data, int yoffset);
-void	handle_multiple3d(t_threed_handle *data, t_player *player, \
+void			handle_multiple3d(t_threed_handle *data, t_player *player, \
 int index, float project_height);
-void	handle_single3d(t_threed_handle *data, t_player *player, \
+void			handle_single3d(t_threed_handle *data, t_player *player, \
 int index, float project_height);
-void	put_stripin3d(t_player *player, float project_height, int index);
-void	render_3d(t_player *player);
-int		get_width(t_directions *path);
-int		get_height(t_directions *path);
-int		*get_widths(t_directions *path, int height);
-void	create_images(t_player *player);
-int		close_win(t_player *player);
-int		stop(void);
-int		next_frame(int key, t_player *player);
-float	distance(t_player *p, float Wallx, float Wally);
-void	fill_data(t_ray *ray, float angle, t_ray_steps data, int was_vertical);
-t_ray_steps	get_vert_steps(t_player *player, float angle);
-t_ray_steps	get_horz_steps(t_player *player, float angle);
-void	set_distance(t_ray_steps *data, t_player *player);
-void	horz_distance(t_ray_steps *data, t_player *player);
-void	vert_distance(t_ray_steps *data, t_player *player);
-void	cast_ray(t_player *player, float angle);
-void	get_rays(t_player *player);
-int		iswall(float a, float b, t_player *player);
-void	change_player_status(t_player *player, int key);
+void			put_stripin3d(t_player *player, \
+float project_height, int index);
+void			render_3d(t_player *player);
+int				get_width(t_directions *path);
+int				get_height(t_directions *path);
+int				*get_widths(t_directions *path, int height);
+void			create_images(t_player *player);
+int				close_win(t_player *player);
+int				stop(void);
+int				next_frame(int key, t_player *player);
+float			distance(t_player *p, float Wallx, float Wally);
+void			fill_data(t_ray *ray, float angle, \
+t_ray_steps data, int was_vertical);
+t_ray_steps		get_vert_steps(t_player *player, float angle);
+t_ray_steps		get_horz_steps(t_player *player, float angle);
+void			set_distance(t_ray_steps *data, t_player *player);
+void			horz_distance(t_ray_steps *data, t_player *player);
+void			vert_distance(t_ray_steps *data, t_player *player);
+void			cast_ray(t_player *player, float angle);
+void			get_rays(t_player *player);
+int				iswall(float a, float b, t_player *player);
+void			change_player_status(t_player *player, int key);
+void			init_keys(t_player *player, int key);
+void			check_left_angle(t_player *player);
+void			check_right_angle(t_player *player);
+void			check_right_move(t_player *player);
+void			check_left_move(t_player *player);
+void			change_player_status(t_player *player, int key);
+int				check_line(t_player *player, float endX, float endY);
+void			check_up(t_player *player);
+void			check_down(t_player *player);
+#endif 

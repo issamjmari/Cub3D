@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:10:06 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/08 16:09:25 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/10 14:30:34 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,14 @@ t_threed_handle *data, int yoffset)
 {
 	if (player->ray[index].ray_content == 1)
 		my_mlx_pixel_put(&player->img, index, data->ceil_y++, \
-	get_color(yoffset, data->Xoffset, &player->img1));
+	get_color(yoffset, data->xoffset, &player->img1));
 	else if (player->ray[index].ray_content == 2)
 		my_mlx_pixel_put(&player->img, index, data->ceil_y++, \
-		get_color(yoffset, data->Xoffset, &player->img2));
+		get_color(yoffset, data->xoffset, &player->img2));
 	else if (player->ray[index].ray_content == 3)
 		my_mlx_pixel_put(&player->img, index, data->ceil_y++, \
-		get_color(yoffset, data->Xoffset, &player->img3));
+		get_color(yoffset, data->xoffset, &player->img3));
 	else if (player->ray[index].ray_content == 4)
 		my_mlx_pixel_put(&player->img, index, data->ceil_y++, \
-		get_color(yoffset, data->Xoffset, &player->img4));
+		get_color(yoffset, data->xoffset, &player->img4));
 }

@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:32:29 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/02 14:59:35 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/10 14:38:46 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,20 @@ void	fill_data(t_ray *ray, float angle, t_ray_steps data, int was_vertical)
 
 	ray[rayid].distance = data.distance;
 	ray[rayid].ray_angle = angle;
-	ray[rayid].Wallhitx = data.Wall_x;
-	ray[rayid].Wallhity = data.Wall_y;
+	ray[rayid].wallhitx = data.wall_x;
+	ray[rayid].wallhity = data.wall_y;
 	ray[rayid].was_hit_vertical = was_vertical;
-	ray[rayid].isRay_down = data.ray_down;
-	ray[rayid].isRay_up = data.ray_up;
-	ray[rayid].isRay_left = data.ray_left;
-	ray[rayid].isRay_right = data.ray_right;
-	if (ray[rayid].isRay_up && !was_vertical)
+	ray[rayid].isray_down = data.ray_down;
+	ray[rayid].isray_up = data.ray_up;
+	ray[rayid].isray_left = data.ray_left;
+	ray[rayid].isray_right = data.ray_right;
+	if (ray[rayid].isray_up && !was_vertical)
 		ray[rayid].ray_content = 1;
-	else if (ray[rayid].isRay_down && !was_vertical)
+	else if (ray[rayid].isray_down && !was_vertical)
 		ray[rayid].ray_content = 2;
-	else if (ray[rayid].isRay_right && was_vertical)
+	else if (ray[rayid].isray_right && was_vertical)
 		ray[rayid].ray_content = 3;
-	else if (ray[rayid].isRay_left && was_vertical)
+	else if (ray[rayid].isray_left && was_vertical)
 		ray[rayid].ray_content = 4;
 	rayid++;
 	if (rayid == 1500)
