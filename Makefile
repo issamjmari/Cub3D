@@ -1,17 +1,31 @@
-SRC = c_files/cub3d.c map_parsing/parsing.c library/ft_split.c library/ft_strncmp.c includes/get_next_line.c \
-includes/get_next_line_utils.c library/ft_lstclear.c library/ft_isalpha.c library/ft_atoi.c \
-library/ft_isalnum.c library/ft_isdigit.c library/ft_substr.c map_parsing/map_validation.c \
-library/ft_strtrim.c map_parsing/parsing_utils.c library/ft_strchr.c c_files/init_variables.c c_files/draw.c \
-c_files/3d_handling.c c_files/map_image.c c_files/handle_events.c c_files/rays1.c c_files/rays2.c map_parsing/data_init.c \
-map_parsing/map_validation_utils.c c_files/angle_handling.c
-CC = cc
-CFLAGS =  -lmlx -framework OpenGL -framework AppKit  #-Wall -Wextra -Werror -fsanitize=address
-NAME = cub3d
+SRC = 3d_handling.c             ft_atoi.c                 get_next_line.c           parsing_utils1.c \
+Cub3d.c                   ft_isalnum.c  \
+ft_isalpha.c              get_next_line_utils.c      \
+ft_isdigit.c              handle_events.c            \
+angle_handling.c               init_variables.c        \
+          rays1.c \
+ft_split.c                          rays2.c \
+ft_strchr.c               map_image.c             \
+              map_validation.c           \
+data_init.c               ft_strncmp.c              map_validation_utils.c \
+draw.c                    ft_strtrim.c              parsing.c \
+        ft_substr.c               parsing_utils.c
 
-all : $(NAME)
-$(NAME) :
-	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
-clean :
-fclean :
-	rm -f $(NAME)
+OBJ = $(SRC:.c=.o)
+CC = cc
+GFLAGS = -Wall -Wextra -Werror
+MLX = -lmlx -framework OpenGL -framework AppKit
+RM = rm -rf
+NAME = Cub3d
+
+all: $(NAME)
+
+$(NAME): $(OBJ)
+	$(CC) $(OBJ) $(MLX) -o $(NAME)
+%.o: %.c
+	$(CC) $(GFLAGS) -c $?
+clean:
+	$(RM) $(OBJ)
+fclean : clean
+	$(RM) $(NAME)
 re : fclean all

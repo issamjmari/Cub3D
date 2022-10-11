@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 14:26:26 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/10/10 14:48:23 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/11 22:02:26 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,42 +15,45 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <fcntl.h>
-# include "includes/get_next_line.h"
-# include "library/library.h"
+# include "get_next_line.h"
+# include "library.h"
 # include <mlx.h>
 # include <math.h>
 # include <stdlib.h>
 
 # define DOUBLE_NEW_LINE "\033[0;31mError \nMAP Contain Multiple New Lines"
-# define ceiling_color_MISSING "\033[0;31mError \nCeiling Color Is Missing"
-# define floor_color_MISSING "\033[0;31mError \nFloor Color Is Missing"
-# define south_TEXTURE_MISSING "\033[0;31mError \nsouth Texture Is Missing"
-# define north_TEXTURE_MISSING "\033[0;31mError \nnorth Texture Is Missing"
-# define west_TEXTURE_MISSING "\033[0;31mError \nwest Texture Is Missing"
-# define east_TEXTURE_MISSING "\033[0;31mError \neast Texture Is Missing"
-# define north_TEXTURE_DUPLICATE "\033[0;31mError \nnorth Texture Already Defined"
-# define west_TEXTURE_DUPLICATE "\033[0;31mError \nwest Texture Already Defined"
-# define east_TEXTURE_DUPLICATE "\033[0;31mError \neast Texture Already Defined"
-# define south_TEXTURE_DUPLICATE "\033[0;31mError \nsouth Texture Already Defined"
+# define CEILING_COLOR_MISSING "\033[0;31mError \nCeiling Color Is Missing"
+# define FLOOR_COLOR_MISSING "\033[0;31mError \nFloor Color Is Missing"
+# define SOUTH_TEXTURE_MISSING "\033[0;31mError \nSouth Texture Is Missing"
+# define NORTH_TEXTURE_MISSING "\033[0;31mError \nNorth Texture Is Missing"
+# define WEST_TEXTURE_MISSING "\033[0;31mError \nWest Texture Is Missing"
+# define EAST_TEXTURE_MISSING "\033[0;31mError \nEast Texture Is Missing"
+# define NORTH_TEXTURE_DUPLICATE "\033[0;31mError \nNorth Texture Already Defined"
+# define WEST_TEXTURE_DUPLICATE "\033[0;31mError \nWest Texture Already Defined"
+# define EAST_TEXTURE_DUPLICATE "\033[0;31mError \nEast Texture Already Defined"
+# define SOUTH_TEXTURE_DUPLICATE "\033[0;31mError \nSouth Texture Already Defined"
 # define FLOOR_DUPLICATE "\033[0;31mError \nFloor Color Already Defined"
 # define CEILING_DUPLICATE "\033[0;31mError \nCeiling Color Already Defined"
 # define MISSING_PLAYER_MSG "\033[0;31mError \nMap Must Contain A Player"
 # define INVALID_MAP "\033[0;31mError \nInvalid Map"
-# define SURROUNDED_SPACE_MSG \
-"\033[0;31mError \nSpace Should Be Surrounded By Walls"
+# define SURROUNDED_SPACE_MSG "\033[0;31mError \nSpace \
+Should Be Surrounded By Walls"
 # define SURROUNDED_MSG "\033[0;31mError \nMap Should Be Surrounded By Walls"
 # define INVALID_DIRECTION_MSG "\033[0;31mError \nInvalid Input"
 # define NOTFOUND_TEXTURE_MSG "\033[0;31mError \nTexture Not Found"
 # define WRONG_RGB_MSG "\033[0;31mError \nWrong RGB Format"
-# define FLOOR_CEILING_MISSING_MSG \
-"\033[0;31mError \nFloor Or Ceiling Color Missing"
-# define UNWANTED_CHARACTER_MSG "\033[0;31mError \nUnwanted Character Exist"
-# define CONTAIN_MORE_MSG "\033[0;31mError \nMap Mustn't Contain More Than 1 Player"
+# define PATH_ERROR "\033[0;31mError \nMap Not Found"
+# define FLOOR_CEILING_MISSING_MSG "\033[0;31mError \nFloor \
+Or Ceiling Color Missing"
+# define UNWANTED_CHARACTER_MSG "\033[0;31mError \nUnwanted \
+Character Exist"
+# define CONTAIN_MORE_MSG "\033[0;31mError \nMap Mustn't \
+Contain More Than 1 Player"
 # define ERROR_OCCURRED "\033[0;31mError \nError occurred"
-# define _north "NO"
-# define _west "WE"
-# define _east "EA"
-# define _south "SO"
+# define N "NO"
+# define W "WE"
+# define E "EA"
+# define S "SO"
 # define FLOOR 'F'
 # define CEILING 'C'
 # define TRUE 1
@@ -62,23 +65,22 @@
 # define TAB '	'
 # define ONE '1'
 
-
 typedef struct map_content_vars
 {
 	char	*entereddata;
-	char	*trimmedData;
+	char	*trimmeddata;
 	int		linescounter;
 	int		i;
 }	t_mapContentVars;
 
 typedef struct checkDuplicate
 {
-    int	fcounter;
-    int	ccounter;
-    int	nocounter;
-    int	socounter;
-    int	eacounter;
-    int	wecounter;
+	int	fcounter;
+	int	ccounter;
+	int	nocounter;
+	int	socounter;
+	int	eacounter;
+	int	wecounter;
 }	t_checkDuplicate;
 typedef struct directions
 {
@@ -210,9 +212,14 @@ typedef struct s_threed_handle
 	int	put_pos;
 }	t_threed_handle;
 
+void			map_first_part(char *entereddata, t_directions *path, \
+t_checkDuplicate *checkDuplicate);
+void			getting_map_content(int fd, t_directions *path);
+void			map_first_part(char *entereddata, t_directions *path, \
+t_checkDuplicate *checkDuplicate);
 int				is_full_spaces(char *entereddata);
 int				check_for_double_newlines(char *map);
-void			missingTexture(t_checkDuplicate *vars);
+void			missing_texture(t_checkDuplicate *vars);
 void			map_content_init(t_mapContentVars *vars);
 void			second_part_init(t_secondPartVars *vars);
 void			unwanted_characters(t_secondPartVars *vars);
@@ -221,18 +228,18 @@ void			rgb_init(t_checking_rgb *var);
 void			unwantedCharactersUtils(int *isExist, char **map, \
 t_directions *path, int i);
 void			unwantedCharacters(char **map, t_directions *path);
-void			texturescounterChecker(int *texturecounter, char *message);
-void			checkingRGBFormatUtils(char *directions, t_checking_rgb *var);
-int				checkingRGBFormat(char *secondPart);
+void			counter_checker(int *texturecounter, char *message);
+void			checking_rgb_formatUtils(char *directions, t_checking_rgb *var);
+int				checking_rgb_format(char *secondPart);
 void			choosing_directions(char *firstPart, char *secondPart, \
 t_directions *path, t_checkDuplicate *checkDuplicate);
 void			ft_free(char **data);
-void			errorMessage(char *message);
+void			error_message(char *message);
 void			path_init(t_directions *path);
-void			isSurroundedByWalls(char **map, int map_height);
-void			mapValidation(t_directions *path);
-void			errorMessage(char *message);
-int				getSize(char **data);
+void			is_surrounded_by_walls(char **map, int map_height);
+void			map_validation(t_directions *path);
+void			error_message(char *message);
+int				get_size(char **data);
 void			start_game(t_directions *path);
 void			initKeys(t_player *player, int key);
 float			getInitPos(t_directions *path);
