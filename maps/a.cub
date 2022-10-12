@@ -1,19 +1,7 @@
-SO                 ./textures/path_to_the_SOUTH_texture                                           
-
-
-
-
-
-
-              NO                  ./textures/path_to_the_north_texture                            
-
-
-
-
-                        WE                      ./textures/path_to_the_west_texture                   
-
-
-          EA                       ./textures/row.xpm       
+SO                 ./textures/path_to_the_SOUTH_texture
+NO                  ./textures/path_to_the_north_texture                            
+WE                      ./textures/path_to_the_west_texture                   
+EA                       ./textures/row.xpm       
 
 C 255, 255, 255
 F 255, 255, 255

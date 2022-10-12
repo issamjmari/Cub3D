@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/05 14:26:26 by ael-hiou          #+#    #+#             */
-/*   Updated: 2022/10/11 22:02:26 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/12 14:39:02 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,8 +269,10 @@ int				next_frame(int key, t_player *player);
 float			distance(t_player *p, float Wallx, float Wally);
 void			fill_data(t_ray *ray, float angle, \
 t_ray_steps data, int was_vertical);
-t_ray_steps		get_vert_steps(t_player *player, float angle);
-t_ray_steps		get_horz_steps(t_player *player, float angle);
+void			get_vert_steps(t_player *player, \
+float angle, t_ray_steps *horz);
+void			get_horz_steps(t_player *player, \
+float angle, t_ray_steps *vert);
 void			set_distance(t_ray_steps *data, t_player *player);
 void			horz_distance(t_ray_steps *data, t_player *player);
 void			vert_distance(t_ray_steps *data, t_player *player);

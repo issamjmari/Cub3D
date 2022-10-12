@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:32:29 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/11 22:01:25 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/12 11:17:15 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,54 +44,48 @@ void	fill_data(t_ray *ray, float angle, t_ray_steps data, int was_vertical)
 		rayid = 0;
 }
 
-t_ray_steps	get_vert_steps(t_player *player, float angle)
+void	get_vert_steps(t_player *player, float angle, t_ray_steps *vert_step)
 {
-	t_ray_steps	vert_step;
-
 	angle = remainder(angle, 2 * M_PI);
 	if (angle < 0)
 		angle += 2 * M_PI;
-	vert_step.ray_down = (angle > 0 && angle < M_PI);
-	vert_step.ray_up = !vert_step.ray_down;
-	vert_step.ray_right = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
-	vert_step.ray_left = !vert_step.ray_right;
-	vert_step.x_intercept = floor(player->x / 64) * 64;
-	if (vert_step.ray_right)
-		vert_step.x_intercept += 64;
-	vert_step.y_intercept = player->y + \
-	((vert_step.x_intercept - player->x) * tan(angle));
-	vert_step.xstep = 64;
-	if (vert_step.ray_left)
-		vert_step.xstep *= -1;
-	vert_step.ystep = 64 * tan(angle);
-	if ((vert_step.ray_up && vert_step.ystep > 0)
-		|| (vert_step.ray_down && vert_step.ystep < 0))
-		vert_step.ystep *= -1;
-	return (vert_step);
+	vert_step->ray_down = (angle > 0 && angle < M_PI);
+	vert_step->ray_up = !vert_step->ray_down;
+	vert_step->ray_right = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
+	vert_step->ray_left = !vert_step->ray_right;
+	vert_step->x_intercept = floor(player->x / 64) * 64;
+	if (vert_step->ray_right)
+		vert_step->x_intercept += 64;
+	vert_step->y_intercept = player->y + \
+	((vert_step->x_intercept - player->x) * tan(angle));
+	vert_step->xstep = 64;
+	if (vert_step->ray_left)
+		vert_step->xstep *= -1;
+	vert_step->ystep = 64 * tan(angle);
+	if ((vert_step->ray_up && vert_step->ystep > 0)
+		|| (vert_step->ray_down && vert_step->ystep < 0))
+		vert_step->ystep *= -1;
 }
 
-t_ray_steps	get_horz_steps(t_player *player, float angle)
+void	get_horz_steps(t_player *player, float angle, t_ray_steps *horz_step)
 {
-	t_ray_steps	horz_step;
-
 	angle = remainder(angle, 2 * M_PI);
 	if (angle < 0)
 		angle += 2 * M_PI;
-	horz_step.ray_down = (angle > 0 && angle < M_PI);
-	horz_step.ray_up = !horz_step.ray_down;
-	horz_step.ray_right = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
-	horz_step.ray_left = !horz_step.ray_right;
-	horz_step.y_intercept = floor(player->y / 64) * 64;
-	if (horz_step.ray_down)
-		horz_step.y_intercept += 64;
-	horz_step.x_intercept = player->x + \
-	(horz_step.y_intercept - player->y) / tan(angle);
-	horz_step.ystep = 64;
-	if (horz_step.ray_up)
-		horz_step.ystep *= -1;
-	horz_step.xstep = 64 / tan(angle);
-	if ((horz_step.ray_left && horz_step.xstep > 0)
-		|| (horz_step.ray_right && horz_step.xstep < 0))
-		horz_step.xstep *= -1;
-	return (horz_step);
+	horz_step->ray_down = (angle > 0 && angle < M_PI);
+	horz_step->ray_up = !horz_step->ray_down;
+	horz_step->ray_right = (angle < 0.5 * M_PI || angle > 1.5 * M_PI);
+	horz_step->ray_left = !horz_step->ray_right;
+	horz_step->y_intercept = floor(player->y / 64) * 64;
+	if (horz_step->ray_down)
+		horz_step->y_intercept += 64;
+	horz_step->x_intercept = player->x + \
+	(horz_step->y_intercept - player->y) / tan(angle);
+	horz_step->ystep = 64;
+	if (horz_step->ray_up)
+		horz_step->ystep *= -1;
+	horz_step->xstep = 64 / tan(angle);
+	if ((horz_step->ray_left && horz_step->xstep > 0)
+		|| (horz_step->ray_right && horz_step->xstep < 0))
+		horz_step->xstep *= -1;
 }

@@ -6,7 +6,7 @@
 /*   By: ijmari <ijmari@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/01 21:30:33 by ijmari            #+#    #+#             */
-/*   Updated: 2022/10/11 22:01:25 by ijmari           ###   ########.fr       */
+/*   Updated: 2022/10/12 11:25:05 by ijmari           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	set_distance(t_ray_steps *data, t_player *player)
 	if (data->found_wall)
 		data->distance = distance(player, data->wall_x, data->wall_y);
 	else
-		data->distance = 2147483647;
+		data->distance = 3.402823466e+38f;
 }
 
 void	horz_distance(t_ray_steps *data, t_player *player)
@@ -77,8 +77,8 @@ void	cast_ray(t_player *player, float angle)
 	t_ray_steps	horz_result;
 	t_ray_steps	vert_result;
 
-	horz_result = get_horz_steps(player, angle);
-	vert_result = get_vert_steps(player, angle);
+	get_horz_steps(player, angle, &horz_result);
+	get_vert_steps(player, angle, &vert_result);
 	horz_distance(&horz_result, player);
 	vert_distance(&vert_result, player);
 	if (horz_result.distance < vert_result.distance)
